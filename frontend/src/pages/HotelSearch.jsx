@@ -119,21 +119,9 @@ const HotelSearch = () => {
         {/* Sidebar Filters */}
         <aside className="w-full lg:w-72 space-y-8">
           <div className="glass rounded-3xl p-6 shadow-sm border border-gray-100">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-bold text-gray-900 flex items-center">
+            <h3 className="font-bold text-gray-900 mb-6 flex items-center">
               <Filter className="w-4 h-4 mr-2" /> Filters
             </h3>
-            <button 
-              onClick={() => {
-                setPriceRange(50000);
-                setSelectedRating(0);
-                setSelectedAmenities([]);
-              }}
-              className="text-xs font-bold text-primary hover:underline"
-            >
-              Reset
-            </button>
-          </div>
 
             <div className="space-y-8">
               {/* Price Range */}
@@ -220,134 +208,99 @@ const HotelSearch = () => {
             </div>
           </div>
 
-          {loading ? (
-            <div className={`grid gap-8 ${viewType === 'grid' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className={`bg-white rounded-[2rem] border border-gray-100 shadow-sm p-4 animate-pulse ${viewType === 'list' ? 'flex flex-col md:flex-row gap-6' : ''}`}>
-                  <div className={`bg-gray-200 rounded-2xl ${viewType === 'list' ? 'md:w-72 h-48' : 'h-60 w-full mb-4'}`}></div>
-                  <div className="flex-grow space-y-4 pt-2">
-                    <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                    <div className="h-20 bg-gray-200 rounded-xl w-full mt-4"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <>
-              <div className={`grid gap-8 ${viewType === 'grid' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
-                {filteredHotels.map(hotel => (
-                  <div 
-                    key={hotel.id} 
-                    className={`bg-white rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer group overflow-hidden ${
-                      viewType === 'list' ? 'flex flex-col md:flex-row' : ''
-                    }`}
-                    onClick={() => navigate(`/hotels/${hotel.id}`)}
-                  >
-                    <div className={`relative overflow-hidden ${viewType === 'list' ? 'md:w-72' : 'h-60'}`}>
-                      <img 
-                        src={`${hotel.image}&sig=${hotel.id}`} 
-                        alt={hotel.name} 
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
-                        onError={(e) => {
-                          e.target.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1000&auto=format&fit=crop";
-                        }}
-                      />
-                      <div className="absolute top-4 left-4 glass px-3 py-1.5 rounded-full flex items-center space-x-1">
-                        <Star className="w-3 h-3 fill-secondary text-secondary" />
-                        <span className="text-xs font-bold">{hotel.rating}</span>
-                      </div>
-                      {hotel.verified && (
-                        <div className="absolute top-4 right-4 bg-primary text-white p-1.5 rounded-full shadow-lg" title="Verified Property">
-                          <ShieldCheck className="w-4 h-4" />
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="p-6 flex-grow flex flex-col justify-between">
-                      <div>
-                        <div className="flex justify-between items-start mb-2">
-                          <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">{hotel.name}</h3>
-                        </div>
-                        <div className="flex items-center text-gray-400 text-sm mb-4 font-medium">
-                          <MapPin className="w-4 h-4 mr-1 text-primary" />
-                          {hotel.location}
-                        </div>
-                        <div className="flex flex-wrap gap-2 mb-6">
-                          {hotel.amenities.slice(0, 3).map(a => (
-                            <span key={a} className="text-[10px] font-bold uppercase tracking-wider bg-gray-100 text-gray-500 px-2 py-1 rounded-md">{a}</span>
-                          ))}
-                        </div>
-                        
-                        {/* Hotel Comparison */}
-                        <div className="bg-gray-50/50 rounded-2xl p-4 border border-gray-100/50 mb-6">
-                          <div className="flex justify-between items-center mb-3">
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Compare & Save</span>
-                            <span className="text-[10px] font-black bg-green-500 text-white px-2 py-1 rounded-md animate-pulse">Lowest Price</span>
-                          </div>
-                          <div className="space-y-2">
-                            {(() => {
-                              const { sorted } = findCheapest(hotel.prices);
-                              return sorted.map((site, i) => {
-                                const isCheapest = i === 0;
-                                return (
-                                  <div 
-                                    key={i} 
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      navigate(`/hotels/${hotel.id}`, { state: { selectedProvider: site } });
-                                    }}
-                                    className={`flex justify-between items-center p-2 rounded-xl transition-all cursor-pointer ${isCheapest ? 'bg-white shadow-sm border border-primary/20 hover:border-primary' : 'hover:bg-gray-100/50 hover:border hover:border-gray-300'}`}
-                                  >
-                                    <span className={`text-xs font-bold ${isCheapest ? 'text-primary-dark' : 'text-gray-500'}`}>{site.platform}</span>
-                                    <span className={`text-sm ${isCheapest ? 'font-black text-primary-dark' : 'font-bold text-gray-400 line-through'}`}>
-                                      ₹{site.price.toLocaleString()}
-                                    </span>
-                                  </div>
-                                );
-                              });
-                            })()}
-                          </div>
-                          <div className="mt-2 text-right">
-                            <span className="text-[10px] font-bold text-green-600">Save {findCheapest(hotel.prices).savingsPercent}% vs highest price</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="pt-6 border-t border-gray-50 flex justify-between items-end">
-                        <div>
-                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Starts from</span>
-                          <span className="text-2xl font-black text-gray-900">₹{hotel.price.toLocaleString()}</span>
-                          <span className="text-xs text-gray-400 font-medium"> /night</span>
-                        </div>
-                        <button className="bg-primary text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-all text-sm">
-                          View Deals
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {filteredHotels.length === 0 && (
-                <div className="text-center py-20 glass rounded-3xl mt-8">
-                  <Hotel className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-gray-800 mb-2">No hotels found matching your filters</h3>
-                  <p className="text-gray-500 mb-6">Try relaxing your price constraints or deselecting amenities to see more options.</p>
-                  <button 
-                    onClick={() => {
-                      setPriceRange(50000);
-                      setSelectedRating(0);
-                      setSelectedAmenities([]);
+          <div className={`grid gap-8 ${viewType === 'grid' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+            {filteredHotels.map(hotel => (
+              <div 
+                key={hotel.id} 
+                className={`bg-white rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer group overflow-hidden ${
+                  viewType === 'list' ? 'flex flex-col md:flex-row' : ''
+                }`}
+                onClick={() => navigate(`/hotels/${hotel.id}`)}
+              >
+                <div className={`relative overflow-hidden ${viewType === 'list' ? 'md:w-72' : 'h-60'}`}>
+                  <img 
+                    src={`${hotel.image}&sig=${hotel.id}`} 
+                    alt={hotel.name} 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                    onError={(e) => {
+                      e.target.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1000&auto=format&fit=crop";
                     }}
-                    className="px-6 py-3 bg-primary/10 text-primary rounded-xl font-bold hover:bg-primary/20 transition-all"
-                  >
-                    Clear All Filters
-                  </button>
+                  />
+                  <div className="absolute top-4 left-4 glass px-3 py-1.5 rounded-full flex items-center space-x-1">
+                    <Star className="w-3 h-3 fill-secondary text-secondary" />
+                    <span className="text-xs font-bold">{hotel.rating}</span>
+                  </div>
+                  {hotel.verified && (
+                    <div className="absolute top-4 right-4 bg-primary text-white p-1.5 rounded-full shadow-lg">
+                      <ShieldCheck className="w-4 h-4" />
+                    </div>
+                  )}
                 </div>
-              )}
-            </>
-          )}
+
+                <div className="p-6 flex-grow flex flex-col justify-between">
+                  <div>
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">{hotel.name}</h3>
+                    </div>
+                    <div className="flex items-center text-gray-400 text-sm mb-4 font-medium">
+                      <MapPin className="w-4 h-4 mr-1 text-primary" />
+                      {hotel.location}
+                    </div>
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {hotel.amenities.slice(0, 3).map(a => (
+                        <span key={a} className="text-[10px] font-bold uppercase tracking-wider bg-gray-100 text-gray-500 px-2 py-1 rounded-md">{a}</span>
+                      ))}
+                    </div>
+                    
+                    {/* Hotel Comparison */}
+                    <div className="bg-gray-50/50 rounded-2xl p-4 border border-gray-100/50 mb-6">
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Compare & Save</span>
+                        <span className="text-[10px] font-black bg-green-500 text-white px-2 py-1 rounded-md animate-pulse">Lowest Price</span>
+                      </div>
+                      <div className="space-y-2">
+                        {(() => {
+                          const { sorted } = findCheapest(hotel.prices);
+                          return sorted.map((site, i) => {
+                            const isCheapest = i === 0;
+                            return (
+                              <div 
+                                key={i} 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/hotels/${hotel.id}`, { state: { selectedProvider: site } });
+                                }}
+                                className={`flex justify-between items-center p-2 rounded-xl transition-all cursor-pointer ${isCheapest ? 'bg-white shadow-sm border border-primary/20 hover:border-primary' : 'hover:bg-gray-100/50 hover:border hover:border-gray-300'}`}
+                              >
+                                <span className={`text-xs font-bold ${isCheapest ? 'text-primary-dark' : 'text-gray-500'}`}>{site.platform}</span>
+                                <span className={`text-sm ${isCheapest ? 'font-black text-primary-dark' : 'font-bold text-gray-400 line-through'}`}>
+                                  ₹{site.price.toLocaleString()}
+                                </span>
+                              </div>
+                            );
+                          });
+                        })()}
+                      </div>
+                      <div className="mt-2 text-right">
+                        <span className="text-[10px] font-bold text-green-600">Save {findCheapest(hotel.prices).savingsPercent}% vs highest price</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t border-gray-50 flex justify-between items-end">
+                    <div>
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Starts from</span>
+                      <span className="text-2xl font-black text-gray-900">₹{hotel.price.toLocaleString()}</span>
+                      <span className="text-xs text-gray-400 font-medium"> /night</span>
+                    </div>
+                    <button className="bg-primary text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-all text-sm">
+                      View Deals
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </main>
       </div>
     </div>

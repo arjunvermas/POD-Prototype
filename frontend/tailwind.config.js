@@ -8,14 +8,14 @@ export default {
     extend: {
       colors: {
         primary: {
-          light: '#6366F1', // Indigo 500
-          DEFAULT: '#4F46E5', // Indigo 600
-          dark: '#4338CA', // Indigo 700
+          light: '#14B8A6',
+          DEFAULT: '#0D9488',
+          dark: '#0F766E',
         },
         secondary: {
-          light: '#F43F5E', // Rose 500
-          DEFAULT: '#E11D48', // Rose 600
-          dark: '#BE123C', // Rose 700
+          light: '#FB923C',
+          DEFAULT: '#F97316',
+          dark: '#EA580C',
         },
         accent: '#1E40AF',
       },

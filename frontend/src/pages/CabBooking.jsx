@@ -15,19 +15,13 @@ const CabBooking = () => {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [showResults, setShowResults] = useState(false);
-  const [loading, setLoading] = useState(false);
   const { setBookingData } = useBooking();
   const navigate = useNavigate();
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (pickup && drop && date && time) {
-      setLoading(true);
-      setShowResults(false);
-      setTimeout(() => {
-        setLoading(false);
-        setShowResults(true);
-      }, 800);
+      setShowResults(true);
     }
   };
 
@@ -138,10 +132,9 @@ const CabBooking = () => {
 
               <button 
                 type="submit"
-                disabled={loading}
-                className="lg:col-span-1 bg-primary text-white h-full rounded-2xl font-black text-lg transition-all hover:bg-primary-dark hover:scale-105 active:scale-95 shadow-xl shadow-primary/30 flex items-center justify-center disabled:opacity-70 disabled:hover:scale-100"
+                className="lg:col-span-1 bg-primary text-white h-full rounded-2xl font-black text-lg transition-all hover:bg-primary-dark hover:scale-105 active:scale-95 shadow-xl shadow-primary/30 flex items-center justify-center"
               >
-                {loading ? <div className="w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin"></div> : <Search className="w-6 h-6" />}
+                <Search className="w-6 h-6" />
               </button>
             </form>
           </div>
@@ -149,31 +142,7 @@ const CabBooking = () => {
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-        {loading ? (
-          <div className="space-y-8 animate-fade-in">
-            <div className="flex justify-between items-end mb-8">
-              <div className="space-y-2">
-                <div className="h-8 w-48 bg-gray-200 rounded animate-pulse"></div>
-                <div className="h-4 w-64 bg-gray-200 rounded animate-pulse"></div>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-6 animate-pulse">
-                  <div className="h-40 bg-gray-100 rounded-2xl w-full mb-6"></div>
-                  <div className="h-6 w-3/4 bg-gray-200 rounded mb-4"></div>
-                  <div className="space-y-2 mb-6">
-                    <div className="h-4 w-full bg-gray-100 rounded"></div>
-                    <div className="h-4 w-5/6 bg-gray-100 rounded"></div>
-                    <div className="h-4 w-4/6 bg-gray-100 rounded"></div>
-                  </div>
-                  <div className="h-20 bg-gray-100 rounded-xl w-full mb-4"></div>
-                  <div className="h-12 bg-gray-200 rounded-xl w-full"></div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : showResults ? (
+        {showResults ? (
           <div className="space-y-8 animate-fade-in">
             <div className="flex justify-between items-end">
               <div>

@@ -291,17 +291,11 @@ const Booking = () => {
                       <span className="text-gray-900">₹{costs.subtotal.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center text-sm font-bold text-gray-500 uppercase tracking-widest">
-                      <span className="flex items-center group cursor-help">
-                        Taxes & GST
-                        <Info className="w-4 h-4 ml-2 text-gray-400 group-hover:text-primary transition-colors" title="Government mandated GST and service tax applied on the base fare" />
-                      </span>
+                      <span>Taxes & GST</span>
                       <span className="text-gray-900">₹{Math.floor(costs.taxes).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center text-sm font-bold text-gray-500 uppercase tracking-widest">
-                      <span className="flex items-center group cursor-help">
-                        Booking Fee
-                        <Info className="w-4 h-4 ml-2 text-gray-400 group-hover:text-primary transition-colors" title="Standard platform fee to maintain secure payments and 24/7 support" />
-                      </span>
+                      <span>Booking Fee</span>
                       <span className="text-gray-900">₹{costs.fee}</span>
                     </div>
                     {promoApplied && (
