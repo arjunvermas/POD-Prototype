@@ -241,96 +241,132 @@ const FlightSearch = () => {
         </div>
 
         <div className="space-y-4 animate-fade-in">
-          {filteredFlights.map(flight => (
-            <div key={flight.id} className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 p-6">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                <div className="flex items-center space-x-4 w-full md:w-auto">
-                  <img src={flight.logo} alt={flight.airline} className="w-12 h-12 object-contain" />
-                  <div>
-                    <h4 className="font-bold text-gray-900">{flight.airline}</h4>
-                    <p className="text-xs text-gray-400 font-medium tracking-wider uppercase">{flight.stops}</p>
-                  </div>
+          {loading ? (
+            // Skeleton Loader (Visibility of System Status heuristic)
+            [1, 2, 3].map((i) => (
+              <div key={i} className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 animate-pulse flex flex-col md:flex-row gap-6 items-center">
+                <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                <div className="flex-grow w-full space-y-4">
+                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                  <div className="h-8 bg-gray-200 rounded w-full"></div>
                 </div>
+                <div className="w-full md:w-32 h-12 bg-gray-200 rounded-xl"></div>
+              </div>
+            ))
+          ) : (
+            <>
+              {filteredFlights.map(flight => (
+                <div key={flight.id} className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 p-6">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="flex items-center space-x-4 w-full md:w-auto">
+                      <img src={flight.logo} alt={flight.airline} className="w-12 h-12 object-contain" />
+                      <div>
+                        <h4 className="font-bold text-gray-900">{flight.airline}</h4>
+                        <p className="text-xs text-gray-400 font-medium tracking-wider uppercase">{flight.stops}</p>
+                      </div>
+                    </div>
 
-                <div className="flex items-center justify-between flex-grow w-full md:w-auto px-0 md:px-8">
-                  <div className="text-center">
-                    <p className="text-xl font-bold text-gray-900">{flight.departure}</p>
-                    <p className="text-xs text-gray-400 font-bold tracking-widest uppercase">{flight.origin}</p>
-                  </div>
-                  <div className="flex flex-col items-center flex-grow px-4 opacity-50">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{flight.duration}</span>
-                    <div className="w-full h-px bg-gray-200 relative">
-                      <div className="absolute -top-1 left-1/2 -translate-x-1/2">
-                        <Plane className="w-3 h-3 text-gray-300 rotate-90" />
+                    <div className="flex items-center justify-between flex-grow w-full md:w-auto px-0 md:px-8">
+                      <div className="text-center">
+                        <p className="text-xl font-bold text-gray-900">{flight.departure}</p>
+                        <p className="text-xs text-gray-400 font-bold tracking-widest uppercase">{flight.origin}</p>
+                      </div>
+                      <div className="flex flex-col items-center flex-grow px-4 opacity-50">
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{flight.duration}</span>
+                        <div className="w-full h-px bg-gray-200 relative">
+                          <div className="absolute -top-1 left-1/2 -translate-x-1/2">
+                            <Plane className="w-3 h-3 text-gray-300 rotate-90" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-xl font-bold text-gray-900">{flight.arrival}</p>
+                        <p className="text-xs text-gray-400 font-bold tracking-widest uppercase">{flight.destination}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col md:items-end justify-center w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-gray-50">
+                      <p className="text-2xl font-black text-gray-900 mb-1">₹{flight.price.toLocaleString()}</p>
+                      <div className="flex space-x-2">
+                        <button 
+                          onClick={() => setSelectedFlight(flight)}
+                          className="p-2 text-gray-400 hover:text-primary transition-colors"
+                          title="View Flight Details"
+                        >
+                          <Info className="w-5 h-5" />
+                        </button>
+                        <button 
+                          onClick={() => handleBook(flight)}
+                          className="px-6 py-2 bg-primary text-white rounded-xl font-bold hover:bg-primary-dark transition-all shadow-lg shadow-primary/20"
+                        >
+                          Book Now
+                        </button>
                       </div>
                     </div>
                   </div>
-                  <div className="text-center">
-                    <p className="text-xl font-bold text-gray-900">{flight.arrival}</p>
-                    <p className="text-xs text-gray-400 font-bold tracking-widest uppercase">{flight.destination}</p>
+                  <div className="mt-6 pt-6 border-t border-gray-50 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <div className="flex items-center space-x-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                      <span className="flex items-center text-green-600"><ShieldCheck className="w-4 h-4 mr-2" /> Free Cancellation</span>
+                      <span className="flex items-center"><Luggage className="w-4 h-4 mr-2" /> 15 kg Check-in</span>
+                    </div>
+                    
+                    {/* Price Comparison Widget */}
+                    <div className="bg-gray-50/50 rounded-2xl p-4 border border-gray-100/50">
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Compare & Save</span>
+                        <span className="text-[10px] font-black bg-green-500 text-white px-2 py-1 rounded-md animate-pulse">Lowest Price</span>
+                      </div>
+                      <div className="space-y-2">
+                        {(() => {
+                          const { sorted } = findCheapest(flight.prices);
+                          return sorted.map((site, i) => {
+                            const isCheapest = i === 0;
+                            return (
+                              <div 
+                                key={i} 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setBookingData({ type: 'flight', item: flight, selectedProvider: site });
+                                  navigate('/booking');
+                                }}
+                                className={`flex justify-between items-center p-2 rounded-xl transition-all cursor-pointer ${isCheapest ? 'bg-white shadow-sm border border-primary/20 hover:border-primary' : 'hover:bg-gray-100/50 hover:border hover:border-gray-300'}`}
+                              >
+                                <span className={`text-xs font-bold ${isCheapest ? 'text-primary-dark' : 'text-gray-500'}`}>{site.platform}</span>
+                                <span className={`text-sm ${isCheapest ? 'font-black text-primary-dark' : 'font-bold text-gray-400'}`}>
+                                  ₹{site.price.toLocaleString()}
+                                </span>
+                              </div>
+                            );
+                          });
+                        })()}
+                      </div>
+                      <div className="mt-2 text-right">
+                        <span className="text-[10px] font-bold text-green-600">Save {findCheapest(flight.prices).savingsPercent}% vs highest price</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
+              ))}
 
-                <div className="flex flex-col md:items-end justify-center w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-gray-50">
-                  <p className="text-2xl font-black text-gray-900 mb-1">₹{flight.price.toLocaleString()}</p>
-                  <div className="flex space-x-2">
-                    <button 
-                      onClick={() => setSelectedFlight(flight)}
-                      className="p-2 text-gray-400 hover:text-primary transition-colors"
-                    >
-                      <Info className="w-5 h-5" />
-                    </button>
-                    <button 
-                      onClick={() => handleBook(flight)}
-                      className="px-6 py-2 bg-primary text-white rounded-xl font-bold hover:bg-primary-dark transition-all shadow-lg shadow-primary/20"
-                    >
-                      Book Now
-                    </button>
-                  </div>
+              {filteredFlights.length === 0 && (
+                <div className="text-center py-20 glass rounded-3xl">
+                  <Plane className="w-16 h-16 text-gray-200 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">No flights found matching your filters</h3>
+                  <p className="text-gray-500 mb-6">Try adjusting your price range, time, or other requirements to see more options.</p>
+                  <button 
+                    onClick={() => {
+                      setPriceRange(20000);
+                      setSelectedStops([]);
+                      setSelectedAirlines([]);
+                      setSelectedTime(null);
+                    }}
+                    className="px-6 py-3 bg-primary/10 text-primary rounded-xl font-bold hover:bg-primary/20 transition-all"
+                  >
+                    Clear All Filters
+                  </button>
                 </div>
-              </div>
-              <div className="mt-6 pt-6 border-t border-gray-50 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                <div className="flex items-center space-x-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                  <span className="flex items-center text-green-600"><ShieldCheck className="w-4 h-4 mr-2" /> Free Cancellation</span>
-                  <span className="flex items-center"><Luggage className="w-4 h-4 mr-2" /> 15 kg Check-in</span>
-                </div>
-                
-                {/* Price Comparison Widget */}
-                <div className="bg-gray-50/50 rounded-2xl p-4 border border-gray-100/50">
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Compare & Save</span>
-                    <span className="text-[10px] font-black bg-green-500 text-white px-2 py-1 rounded-md animate-pulse">Lowest Price</span>
-                  </div>
-                  <div className="space-y-2">
-                    {(() => {
-                      const { sorted } = findCheapest(flight.prices);
-                      return sorted.map((site, i) => {
-                        const isCheapest = i === 0;
-                        return (
-                          <div key={i} className={`flex justify-between items-center p-2 rounded-xl transition-all ${isCheapest ? 'bg-white shadow-sm border border-primary/20' : 'hover:bg-gray-100/50'}`}>
-                            <span className={`text-xs font-bold ${isCheapest ? 'text-primary-dark' : 'text-gray-500'}`}>{site.platform}</span>
-                            <span className={`text-sm ${isCheapest ? 'font-black text-primary-dark' : 'font-bold text-gray-400'}`}>
-                              ₹{site.price.toLocaleString()}
-                            </span>
-                          </div>
-                        );
-                      });
-                    })()}
-                  </div>
-                  <div className="mt-2 text-right">
-                    <span className="text-[10px] font-bold text-green-600">Save {findCheapest(flight.prices).savingsPercent}% vs highest price</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {filteredFlights.length === 0 && (
-            <div className="text-center py-20 glass rounded-3xl">
-              <Plane className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-gray-400">No flights found matching your filters</h3>
-              <p className="text-gray-400">Try adjusting your price range or other requirements.</p>
-            </div>
+              )}
+            </>
           )}
         </div>
       </main>

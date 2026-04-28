@@ -15,13 +15,19 @@ const CabBooking = () => {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [showResults, setShowResults] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { setBookingData } = useBooking();
   const navigate = useNavigate();
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (pickup && drop && date && time) {
-      setShowResults(true);
+      setLoading(true);
+      setShowResults(false);
+      setTimeout(() => {
+        setLoading(false);
+        setShowResults(true);
+      }, 800);
     }
   };
 
@@ -132,9 +138,10 @@ const CabBooking = () => {
 
               <button 
                 type="submit"
-                className="lg:col-span-1 bg-primary text-white h-full rounded-2xl font-black text-lg transition-all hover:bg-primary-dark hover:scale-105 active:scale-95 shadow-xl shadow-primary/30 flex items-center justify-center"
+                disabled={loading}
+                className="lg:col-span-1 bg-primary text-white h-full rounded-2xl font-black text-lg transition-all hover:bg-primary-dark hover:scale-105 active:scale-95 shadow-xl shadow-primary/30 flex items-center justify-center disabled:opacity-70 disabled:hover:scale-100"
               >
-                <Search className="w-6 h-6" />
+                {loading ? <div className="w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin"></div> : <Search className="w-6 h-6" />}
               </button>
             </form>
           </div>
@@ -142,7 +149,31 @@ const CabBooking = () => {
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-        {showResults ? (
+        {loading ? (
+          <div className="space-y-8 animate-fade-in">
+            <div className="flex justify-between items-end mb-8">
+              <div className="space-y-2">
+                <div className="h-8 w-48 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-4 w-64 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-6 animate-pulse">
+                  <div className="h-40 bg-gray-100 rounded-2xl w-full mb-6"></div>
+                  <div className="h-6 w-3/4 bg-gray-200 rounded mb-4"></div>
+                  <div className="space-y-2 mb-6">
+                    <div className="h-4 w-full bg-gray-100 rounded"></div>
+                    <div className="h-4 w-5/6 bg-gray-100 rounded"></div>
+                    <div className="h-4 w-4/6 bg-gray-100 rounded"></div>
+                  </div>
+                  <div className="h-20 bg-gray-100 rounded-xl w-full mb-4"></div>
+                  <div className="h-12 bg-gray-200 rounded-xl w-full"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : showResults ? (
           <div className="space-y-8 animate-fade-in">
             <div className="flex justify-between items-end">
               <div>
@@ -183,28 +214,41 @@ const CabBooking = () => {
 
                     {/* Cab Comparison */}
                     <div className="bg-gray-50/50 rounded-2xl p-4 border border-gray-100/50 mb-6">
-                      <div className="flex justify-between items-center mb-2">
+                      <div className="flex justify-between items-center mb-3">
                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Compare & Save</span>
-                        <div className="flex items-center text-[10px] font-black text-green-600 bg-green-50 px-2 py-0.5 rounded border border-green-100">
-                          <CheckCircle2 className="w-3 h-3 mr-1" /> Best Value
-                        </div>
+                        <span className="text-[10px] font-black bg-green-500 text-white px-2 py-1 rounded-md animate-pulse">Lowest Price</span>
                       </div>
-                      <div className="space-y-1">
+                      <div className="space-y-2">
                         {(() => {
                           const { sorted } = findCheapest(cab.prices);
                           return sorted.map((site, i) => {
                             const isCheapest = i === 0;
                             return (
-                              <div key={i} className="flex justify-between items-center text-[10px] font-bold">
-                                <span className={isCheapest ? "text-primary-dark" : "text-gray-400"}>{site.platform}</span>
-                                <span className={isCheapest ? "text-primary-dark font-black" : "text-gray-500 line-through"}>₹{site.price.toLocaleString()}</span>
+                              <div 
+                                key={i} 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setBookingData({ 
+                                    type: 'cab', 
+                                    item: cab, 
+                                    details: { pickup, drop, date, time, serviceType: activeTab },
+                                    selectedProvider: site
+                                  });
+                                  navigate('/booking');
+                                }}
+                                className={`flex justify-between items-center p-2 rounded-xl transition-all cursor-pointer ${isCheapest ? 'bg-white shadow-sm border border-primary/20 hover:border-primary' : 'hover:bg-gray-100/50 hover:border hover:border-gray-300'}`}
+                              >
+                                <span className={`text-xs font-bold ${isCheapest ? 'text-primary-dark' : 'text-gray-500'}`}>{site.platform}</span>
+                                <span className={`text-sm ${isCheapest ? 'font-black text-primary-dark' : 'font-bold text-gray-400 line-through'}`}>
+                                  ₹{site.price.toLocaleString()}
+                                </span>
                               </div>
                             );
                           });
                         })()}
                       </div>
                       <div className="mt-2 text-right">
-                        <span className="text-[10px] font-bold text-green-600">Save {findCheapest(cab.prices).savingsPercent}% vs highest</span>
+                        <span className="text-[10px] font-bold text-green-600">Save {findCheapest(cab.prices).savingsPercent}% vs highest price</span>
                       </div>
                     </div>
 

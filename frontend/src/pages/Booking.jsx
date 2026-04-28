@@ -37,10 +37,20 @@ const Booking = () => {
 
   const { type, item, details, room } = currentBooking;
 
+  const pricesObj = item.prices || (room && room.prices) || item.prices || {}; // Actually hotels have item.prices
+  const cheapestData = findCheapest(pricesObj);
+  const [selectedProvider, setSelectedProvider] = useState(
+    currentBooking.selectedProvider || cheapestData?.cheapest
+  );
+
   const calculateTotal = () => {
     let base = item.price;
-    if (type === 'hotel' && room) base = room.price;
-    if (type === 'cab') base = item.baseFare;
+    if (type === 'flight') base = selectedProvider ? selectedProvider.price : item.price;
+    if (type === 'cab') base = selectedProvider ? selectedProvider.price : item.baseFare;
+    if (type === 'hotel' && room) {
+      const multiplier = room.price / item.price;
+      base = selectedProvider ? selectedProvider.price * multiplier : room.price;
+    }
     
     const taxes = base * 0.18;
     const fee = 499;
@@ -57,10 +67,6 @@ const Booking = () => {
 
   const costs = calculateTotal();
 
-  const pricesObj = item.prices || (room && room.prices) || {};
-  const cheapestData = findCheapest(pricesObj);
-  const cheapestPlatform = cheapestData?.cheapest?.platform || 'MakeMyTrip';
-
   const handleConfirm = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -70,7 +76,17 @@ const Booking = () => {
       confirmBooking({ ...formData, costs });
       
       let redirectUrl = 'https://www.makemytrip.com/';
-      if (cheapestData?.cheapest?.url) {
+      const urlMap = {
+        'MakeMyTrip': 'https://www.makemytrip.com/',
+        'Goibibo': 'https://www.goibibo.com/',
+        'Booking.com': 'https://www.booking.com/'
+      };
+      
+      if (selectedProvider && selectedProvider.url) {
+        redirectUrl = selectedProvider.url;
+      } else if (selectedProvider && urlMap[selectedProvider.platform]) {
+        redirectUrl = urlMap[selectedProvider.platform];
+      } else if (cheapestData?.cheapest?.url) {
         redirectUrl = cheapestData.cheapest.url;
       }
       
@@ -275,11 +291,17 @@ const Booking = () => {
                       <span className="text-gray-900">₹{costs.subtotal.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center text-sm font-bold text-gray-500 uppercase tracking-widest">
-                      <span>Taxes & GST</span>
+                      <span className="flex items-center group cursor-help">
+                        Taxes & GST
+                        <Info className="w-4 h-4 ml-2 text-gray-400 group-hover:text-primary transition-colors" title="Government mandated GST and service tax applied on the base fare" />
+                      </span>
                       <span className="text-gray-900">₹{Math.floor(costs.taxes).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center text-sm font-bold text-gray-500 uppercase tracking-widest">
-                      <span>Booking Fee</span>
+                      <span className="flex items-center group cursor-help">
+                        Booking Fee
+                        <Info className="w-4 h-4 ml-2 text-gray-400 group-hover:text-primary transition-colors" title="Standard platform fee to maintain secure payments and 24/7 support" />
+                      </span>
                       <span className="text-gray-900">₹{costs.fee}</span>
                     </div>
                     {promoApplied && (
@@ -310,12 +332,17 @@ const Booking = () => {
                   </div>
                   <div className="space-y-3">
                     {cheapestData.sorted.map((site, i) => {
+                      const isSelected = selectedProvider?.platform === site.platform;
                       const isCheapest = i === 0;
                       return (
-                        <div key={i} className={`flex justify-between items-center p-3 rounded-xl transition-all ${isCheapest ? 'bg-white shadow-md border-2 border-primary' : 'bg-gray-50 border border-gray-100'}`}>
-                          <span className={`text-xs font-bold ${isCheapest ? 'text-primary-dark' : 'text-gray-500'}`}>{site.platform}</span>
-                          <span className={`text-sm ${isCheapest ? 'font-black text-primary-dark' : 'font-bold text-gray-400 line-through'}`}>
-                            ₹{site.price.toLocaleString()}
+                        <div 
+                          key={i} 
+                          onClick={() => setSelectedProvider(site)}
+                          className={`flex justify-between items-center p-3 rounded-xl transition-all cursor-pointer ${isSelected ? 'bg-white shadow-md border-2 border-primary' : 'bg-gray-50 border border-gray-100 hover:border-primary/50 hover:bg-white'}`}
+                        >
+                          <span className={`text-xs font-bold ${isSelected ? 'text-primary-dark' : 'text-gray-500'}`}>{site.platform}</span>
+                          <span className={`text-sm ${isSelected ? 'font-black text-primary-dark' : (isCheapest ? 'font-bold text-gray-900' : 'font-bold text-gray-400 line-through')}`}>
+                            ₹{type === 'hotel' && room ? (site.price * (room.price / item.price)).toLocaleString() : site.price.toLocaleString()}
                           </span>
                         </div>
                       );

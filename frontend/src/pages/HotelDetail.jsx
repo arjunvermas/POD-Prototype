@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Star, MapPin, Wifi, Coffee, Car, Dumbbell, ShieldCheck, 
   Check, Info, ChevronLeft, ChevronRight, Camera, User, 
@@ -15,6 +15,8 @@ const HotelDetail = () => {
   const hotel = hotels.find(h => h.id === parseInt(id));
   const { setBookingData } = useBooking();
   const [selectedRoom, setSelectedRoom] = useState(null);
+  const location = useLocation();
+  const [selectedProvider, setSelectedProvider] = useState(location.state?.selectedProvider || null);
 
   if (!hotel) return <div className="text-center py-20">Hotel not found</div>;
 
@@ -25,7 +27,7 @@ const HotelDetail = () => {
   ];
 
   const handleBook = (room) => {
-    setBookingData({ type: 'hotel', item: hotel, room: room });
+    setBookingData({ type: 'hotel', item: hotel, room: room, selectedProvider: selectedProvider || findCheapest(hotel.prices).cheapest });
     navigate('/booking');
   };
 
@@ -218,13 +220,19 @@ const HotelDetail = () => {
                 </div>
                 <div className="space-y-2">
                   {(() => {
-                    const { sorted } = findCheapest(hotel.prices);
+                    const { sorted, cheapest } = findCheapest(hotel.prices);
+                    const currentSelection = selectedProvider || cheapest;
                     return sorted.map((site, i) => {
+                      const isSelected = currentSelection.platform === site.platform;
                       const isCheapest = i === 0;
                       return (
-                        <div key={i} className={`flex justify-between items-center p-2 rounded-xl transition-all ${isCheapest ? 'bg-white shadow-sm border border-primary/20' : 'hover:bg-gray-100/50'}`}>
-                          <span className={`text-xs font-bold ${isCheapest ? 'text-primary-dark' : 'text-gray-500'}`}>{site.platform}</span>
-                          <span className={`text-sm ${isCheapest ? 'font-black text-primary-dark' : 'font-bold text-gray-400 line-through'}`}>
+                        <div 
+                          key={i} 
+                          onClick={() => setSelectedProvider(site)}
+                          className={`flex justify-between items-center p-2 rounded-xl transition-all cursor-pointer ${isSelected ? 'bg-white shadow-sm border-2 border-primary' : 'bg-gray-50 border border-gray-100 hover:border-primary/50 hover:bg-white'}`}
+                        >
+                          <span className={`text-xs font-bold ${isSelected ? 'text-primary-dark' : 'text-gray-500'}`}>{site.platform}</span>
+                          <span className={`text-sm ${isSelected ? 'font-black text-primary-dark' : (isCheapest ? 'font-bold text-gray-900' : 'font-bold text-gray-400 line-through')}`}>
                             ₹{site.price.toLocaleString()}
                           </span>
                         </div>
