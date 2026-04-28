@@ -2,9 +2,9 @@ export const findCheapest = (prices) => {
   if (!prices) return { cheapest: null, savingsPercent: 0, sorted: [] };
   
   const priceArray = [
-    { platform: 'MakeMyTrip', price: prices.makeMyTrip },
-    { platform: 'Goibibo', price: prices.goibibo },
-    { platform: 'Yatra', price: prices.yatra }
+    { platform: 'MakeMyTrip', price: prices.makeMyTrip, url: 'https://www.makemytrip.com/' },
+    { platform: 'Goibibo', price: prices.goibibo, url: 'https://www.goibibo.com/' },
+    { platform: 'Booking.com', price: prices.bookingDotCom, url: 'https://www.booking.com/' }
   ];
   
   const sorted = priceArray.sort((a, b) => a.price - b.price);

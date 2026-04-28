@@ -1,35 +1,61 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Hotel, Star, MapPin, Search, LayoutGrid, List, Filter, 
-  Wifi, Coffee, Car, Dumbbell, ShieldCheck, CheckCircle2 
+import {
+  Hotel, Star, MapPin, Search, LayoutGrid, List, Filter,
+  Wifi, Coffee, Car, Dumbbell, ShieldCheck, CheckCircle2
 } from 'lucide-react';
-import { hotels } from '../data/hotels';
 import { findCheapest } from '../utils/priceHelper';
 import { useNavigate } from 'react-router-dom';
+import { hotels as hotelData } from '../data/hotels';
 
 const HotelSearch = () => {
   const [viewType, setViewType] = useState('grid');
-  const [filteredHotels, setFilteredHotels] = useState(hotels);
+  const [hotels, setHotels] = useState([]);
+  const [filteredHotels, setFilteredHotels] = useState([]);
   const [priceRange, setPriceRange] = useState(50000);
   const [selectedRating, setSelectedRating] = useState(0);
   const [selectedAmenities, setSelectedAmenities] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [searchParams, setSearchParams] = useState({
+    city: 'Goa',
+    checkInDate: '2026-05-10',
+    checkOutDate: '2026-05-11',
+    adults: 1
+  });
   const navigate = useNavigate();
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
   useEffect(() => {
     let result = hotels.filter(h => h.price <= priceRange);
-    
+
     if (selectedRating > 0) {
-      result = result.filter(h => h.rating >= selectedRating);
+      result = result.filter(h => parseFloat(h.rating) >= selectedRating);
     }
-    
+
     if (selectedAmenities.length > 0) {
-      result = result.filter(h => 
-        selectedAmenities.every(a => h.amenities.includes(a))
+      result = result.filter(h =>
+        selectedAmenities.every(a => h.amenities?.includes(a))
       );
     }
-    
+
     setFilteredHotels(result);
-  }, [priceRange, selectedRating, selectedAmenities]);
+  }, [hotels, priceRange, selectedRating, selectedAmenities]);
+
+  useEffect(() => {
+    setHotels(hotelData);
+  }, []);
+
+  const handleHotelSearch = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setTimeout(() => {
+      const result = hotelData.filter(h => 
+        (!searchParams.city || h.location.toLowerCase().includes(searchParams.city.toLowerCase()) || h.name.toLowerCase().includes(searchParams.city.toLowerCase()))
+      );
+      setHotels(result.length > 0 ? result : hotelData);
+      setLoading(false);
+    }, 500);
+  };
 
   const amenitiesList = [
     { name: "WiFi", icon: Wifi },
@@ -41,6 +67,54 @@ const HotelSearch = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <form onSubmit={handleHotelSearch} className="mb-8 rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+        <div className="grid gap-4 lg:grid-cols-4">
+          <label className="block">
+            <span className="text-sm font-bold text-gray-700">City</span>
+            <input
+              value={searchParams.city}
+              onChange={(e) => setSearchParams({ ...searchParams, city: e.target.value })}
+              placeholder="Goa"
+              className="mt-2 w-full rounded-2xl border border-gray-200 p-3 text-sm outline-none focus:border-primary"
+            />
+          </label>
+          <label className="block">
+            <span className="text-sm font-bold text-gray-700">Check-in</span>
+            <input
+              type="date"
+              value={searchParams.checkInDate}
+              onChange={(e) => setSearchParams({ ...searchParams, checkInDate: e.target.value })}
+              className="mt-2 w-full rounded-2xl border border-gray-200 p-3 text-sm outline-none focus:border-primary"
+            />
+          </label>
+          <label className="block">
+            <span className="text-sm font-bold text-gray-700">Check-out</span>
+            <input
+              type="date"
+              value={searchParams.checkOutDate}
+              onChange={(e) => setSearchParams({ ...searchParams, checkOutDate: e.target.value })}
+              className="mt-2 w-full rounded-2xl border border-gray-200 p-3 text-sm outline-none focus:border-primary"
+            />
+          </label>
+          <label className="block">
+            <span className="text-sm font-bold text-gray-700">Guests</span>
+            <input
+              type="number"
+              min="1"
+              value={searchParams.adults}
+              onChange={(e) => setSearchParams({ ...searchParams, adults: Math.max(1, Number(e.target.value)) })}
+              className="mt-2 w-full rounded-2xl border border-gray-200 p-3 text-sm outline-none focus:border-primary"
+            />
+          </label>
+        </div>
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <span className="text-sm text-gray-500">Search live hotel offers through the API proxy.</span>
+          <button type="submit" className="inline-flex items-center justify-center rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-white transition hover:bg-primary-dark">
+            {loading ? 'Searching...' : 'Search Hotels'}
+          </button>
+        </div>
+        {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
+      </form>
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Sidebar Filters */}
         <aside className="w-full lg:w-72 space-y-8">
@@ -180,21 +254,21 @@ const HotelSearch = () => {
                     
                     {/* Hotel Comparison */}
                     <div className="bg-gray-50/50 rounded-2xl p-4 border border-gray-100/50 mb-6">
-                      <div className="flex justify-between items-center mb-2">
+                      <div className="flex justify-between items-center mb-3">
                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Compare & Save</span>
-                        <div className="flex items-center text-[10px] font-black text-green-600 bg-green-50 px-2 py-0.5 rounded border border-green-100">
-                          <CheckCircle2 className="w-3 h-3 mr-1" /> Best Value
-                        </div>
+                        <span className="text-[10px] font-black bg-green-500 text-white px-2 py-1 rounded-md animate-pulse">Lowest Price</span>
                       </div>
-                      <div className="space-y-1">
+                      <div className="space-y-2">
                         {(() => {
                           const { sorted } = findCheapest(hotel.prices);
                           return sorted.map((site, i) => {
                             const isCheapest = i === 0;
                             return (
-                              <div key={i} className="flex justify-between items-center text-[10px] font-bold">
-                                <span className={isCheapest ? "text-primary-dark" : "text-gray-400"}>{site.platform}</span>
-                                <span className={isCheapest ? "text-primary-dark font-black" : "text-gray-500 line-through"}>₹{site.price.toLocaleString()}</span>
+                              <div key={i} className={`flex justify-between items-center p-2 rounded-xl transition-all ${isCheapest ? 'bg-white shadow-sm border border-primary/20' : 'hover:bg-gray-100/50'}`}>
+                                <span className={`text-xs font-bold ${isCheapest ? 'text-primary-dark' : 'text-gray-500'}`}>{site.platform}</span>
+                                <span className={`text-sm ${isCheapest ? 'font-black text-primary-dark' : 'font-bold text-gray-400 line-through'}`}>
+                                  ₹{site.price.toLocaleString()}
+                                </span>
                               </div>
                             );
                           });

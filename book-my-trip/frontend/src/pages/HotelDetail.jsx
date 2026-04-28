@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { hotels } from '../data/hotels';
 import { useBooking } from '../context/BookingContext';
+import { findCheapest } from '../utils/priceHelper';
 
 const HotelDetail = () => {
   const { id } = useParams();
@@ -206,6 +207,34 @@ const HotelDetail = () => {
                 <div className="flex justify-between text-gray-900 text-lg font-black pt-4 border-t border-gray-100">
                   <span>Total</span>
                   <span>₹{(hotel.price * 3 + 850).toLocaleString()}</span>
+                </div>
+              </div>
+
+              {/* Live Comparison Widget */}
+              <div className="bg-gray-50/50 rounded-2xl p-4 border border-gray-100 mb-8 shadow-inner">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Compare Prices</span>
+                  <span className="text-[10px] font-black bg-green-500 text-white px-2 py-1 rounded-md animate-pulse">Lowest Price</span>
+                </div>
+                <div className="space-y-2">
+                  {(() => {
+                    const { sorted } = findCheapest(hotel.prices);
+                    return sorted.map((site, i) => {
+                      const isCheapest = i === 0;
+                      return (
+                        <div key={i} className={`flex justify-between items-center p-2 rounded-xl transition-all ${isCheapest ? 'bg-white shadow-sm border border-primary/20' : 'hover:bg-gray-100/50'}`}>
+                          <span className={`text-xs font-bold ${isCheapest ? 'text-primary-dark' : 'text-gray-500'}`}>{site.platform}</span>
+                          <span className={`text-sm ${isCheapest ? 'font-black text-primary-dark' : 'font-bold text-gray-400 line-through'}`}>
+                            ₹{site.price.toLocaleString()}
+                          </span>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+                <div className="mt-3 text-center p-2 bg-green-50 rounded-xl border border-green-100">
+                  <span className="text-[10px] font-black text-green-600 uppercase tracking-widest block">Total Savings</span>
+                  <span className="text-sm font-black text-green-700">₹{findCheapest(hotel.prices).savingsAmount.toLocaleString()} ({findCheapest(hotel.prices).savingsPercent}%)</span>
                 </div>
               </div>
 

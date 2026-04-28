@@ -1,5 +1,4 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import api from '../api/axios';
 
 const AuthContext = createContext();
 
@@ -11,12 +10,7 @@ export const AuthProvider = ({ children }) => {
     const fetchUser = async () => {
       const token = localStorage.getItem('token');
       if (token) {
-        try {
-          const res = await api.get('/users/me');
-          setUser(res.data.user);
-        } catch (error) {
-          localStorage.removeItem('token');
-        }
+        setUser({ name: 'Guest User', email: 'guest@example.com' });
       }
       setLoading(false);
     };
@@ -24,10 +18,10 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const res = await api.post('/auth/login', { email, password });
-    setUser(res.data.user);
-    localStorage.setItem('token', res.data.token);
-    return res.data;
+    const dummyUser = { name: 'Guest User', email };
+    setUser(dummyUser);
+    localStorage.setItem('token', 'dummy-token');
+    return { success: true, user: dummyUser, token: 'dummy-token' };
   };
 
   const logout = () => {

@@ -1,95 +1,240 @@
 export const hotels = [
   {
-    id: 1,
-    name: "The Grand Regal Goa",
-    location: "Calangute, Goa",
-    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=1000",
-    rating: 4.8,
-    reviews: 1240,
-    price: 8500,
-    amenities: ["WiFi", "Pool", "Gym", "Restaurant", "Parking"],
-    type: "Resort",
-    verified: true,
-    description: "A luxury resort steps away from the beach with world-class dining."
+    "id": 1,
+    "name": "The Grand Regal Goa",
+    "location": "Calangute, Goa",
+    "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=1000",
+    "rating": 4.8,
+    "reviews": 1240,
+    "price": 8500,
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Restaurant",
+      "Parking"
+    ],
+    "type": "Resort",
+    "verified": true,
+    "description": "A luxury resort steps away from the beach with world-class dining.",
+    "prices": {
+      "makeMyTrip": 9435,
+      "goibibo": 8871,
+      "bookingDotCom": 8500
+    }
   },
   {
-    id: 2,
-    name: "Ocean View Suites",
-    location: "Maldives",
-    image: "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&q=80&w=1000",
-    rating: 4.9,
-    reviews: 850,
-    price: 45000,
-    amenities: ["WiFi", "Pool", "Spa", "Private Beach", "Breakfast"],
-    type: "Resort",
-    verified: true,
-    description: "Experience paradise in our overwater bungalows."
+    "id": 2,
+    "name": "Ocean View Suites",
+    "location": "Maldives",
+    "image": "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&q=80&w=1000",
+    "rating": 4.9,
+    "reviews": 850,
+    "price": 45000,
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Spa",
+      "Private Beach",
+      "Breakfast"
+    ],
+    "type": "Resort",
+    "verified": true,
+    "description": "Experience paradise in our overwater bungalows.",
+    "prices": {
+      "makeMyTrip": 45345,
+      "goibibo": 45000,
+      "bookingDotCom": 46389
+    }
   },
   {
-    id: 3,
-    name: "Parisian Elegance Hotel",
-    location: "Paris, France",
-    image: "https://images.unsplash.com/photo-1551882547-ff43c61f38e0?auto=format&fit=crop&q=80&w=1000",
-    rating: 4.7,
-    reviews: 2100,
-    price: 22000,
-    amenities: ["WiFi", "Bar", "Room Service", "Laundry"],
-    type: "Hotel",
-    verified: true,
-    description: "Classic French elegance in the heart of the city."
+    "id": 3,
+    "name": "Parisian Elegance Hotel",
+    "location": "Paris, France",
+    "image": "https://images.unsplash.com/photo-1551882547-ff43c61f38e0?auto=format&fit=crop&q=80&w=1000",
+    "rating": 4.7,
+    "reviews": 2100,
+    "price": 22000,
+    "amenities": [
+      "WiFi",
+      "Bar",
+      "Room Service",
+      "Laundry"
+    ],
+    "type": "Hotel",
+    "verified": true,
+    "description": "Classic French elegance in the heart of the city.",
+    "prices": {
+      "makeMyTrip": 22000,
+      "goibibo": 22418,
+      "bookingDotCom": 22790
+    }
   },
   {
-    id: 4,
-    name: "Sky High Dubai",
-    location: "Dubai Marina, Dubai",
-    image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=1000",
-    rating: 4.6,
-    reviews: 3200,
-    price: 18000,
-    amenities: ["WiFi", "Pool", "Gym", "Valet Parking"],
-    type: "Hotel",
-    verified: false,
-    description: "Modern luxury with stunning views of the marina."
+    "id": 4,
+    "name": "Sky High Dubai",
+    "location": "Dubai Marina, Dubai",
+    "image": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=1000",
+    "rating": 4.6,
+    "reviews": 3200,
+    "price": 18000,
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Gym",
+      "Valet Parking"
+    ],
+    "type": "Hotel",
+    "verified": false,
+    "description": "Modern luxury with stunning views of the marina.",
+    "prices": {
+      "makeMyTrip": 18000,
+      "goibibo": 18824,
+      "bookingDotCom": 19314
+    }
+  },
+  {
+    "id": 5,
+    "name": "Taj Mahal Palace",
+    "location": "Colaba, Mumbai",
+    "image": "https://images.unsplash.com/photo-1596436889106-be35e843f974?auto=format&fit=crop&q=80&w=1000",
+    "rating": 4.9,
+    "reviews": 5400,
+    "price": 25000,
+    "amenities": [
+      "WiFi",
+      "Sea View",
+      "Pool",
+      "Spa",
+      "Fine Dining"
+    ],
+    "type": "Luxury Hotel",
+    "verified": true,
+    "description": "Iconic heritage hotel overlooking the Gateway of India.",
+    "prices": {
+      "makeMyTrip": 26075,
+      "goibibo": 26106,
+      "bookingDotCom": 25000
+    }
+  },
+  {
+    "id": 6,
+    "name": "The Leela Palace",
+    "location": "Chanakyapuri, Delhi",
+    "image": "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&q=80&w=1000",
+    "rating": 4.8,
+    "reviews": 3100,
+    "price": 21000,
+    "amenities": [
+      "WiFi",
+      "Rooftop Pool",
+      "Gym",
+      "Spa",
+      "Multiple Restaurants"
+    ],
+    "type": "Luxury Hotel",
+    "verified": true,
+    "description": "A regal property offering unparalleled luxury in the capital.",
+    "prices": {
+      "makeMyTrip": 21229,
+      "goibibo": 21631,
+      "bookingDotCom": 21000
+    }
+  },
+  {
+    "id": 7,
+    "name": "ITC Gardenia",
+    "location": "Residency Road, Bangalore",
+    "image": "https://images.unsplash.com/photo-1618773922491-c90a47cd2547?auto=format&fit=crop&q=80&w=1000",
+    "rating": 4.7,
+    "reviews": 2800,
+    "price": 15000,
+    "amenities": [
+      "WiFi",
+      "Eco-friendly",
+      "Pool",
+      "Helipad",
+      "Spa"
+    ],
+    "type": "Luxury Hotel",
+    "verified": true,
+    "description": "Luxury meets nature in this premium eco-friendly hotel.",
+    "prices": {
+      "makeMyTrip": 15000,
+      "goibibo": 15661,
+      "bookingDotCom": 16390
+    }
+  },
+  {
+    "id": 8,
+    "name": "JW Marriott Hotel",
+    "location": "Juhu, Mumbai",
+    "image": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=1000",
+    "rating": 4.6,
+    "reviews": 4200,
+    "price": 19000,
+    "amenities": [
+      "WiFi",
+      "Beach Access",
+      "Pool",
+      "Gym",
+      "Club Lounge"
+    ],
+    "type": "Luxury Hotel",
+    "verified": true,
+    "description": "Opulent seaside stay with breathtaking sunset views.",
+    "prices": {
+      "makeMyTrip": 19000,
+      "goibibo": 19794,
+      "bookingDotCom": 19761
+    }
+  },
+  {
+    "id": 9,
+    "name": "Novotel",
+    "location": "Hitech City, Hyderabad",
+    "image": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&q=80&w=1000",
+    "rating": 4.5,
+    "reviews": 1950,
+    "price": 9500,
+    "amenities": [
+      "WiFi",
+      "Business Center",
+      "Pool",
+      "Gym",
+      "Bar"
+    ],
+    "type": "Business Hotel",
+    "verified": true,
+    "description": "Ideal for business travelers with modern amenities.",
+    "prices": {
+      "makeMyTrip": 9500,
+      "goibibo": 10117,
+      "bookingDotCom": 10520
+    }
+  },
+  {
+    "id": 10,
+    "name": "Radisson Blu",
+    "location": "Banjara Hills, Hyderabad",
+    "image": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&q=80&w=1000",
+    "rating": 4.4,
+    "reviews": 1600,
+    "price": 8000,
+    "amenities": [
+      "WiFi",
+      "Pool",
+      "Spa",
+      "Dining",
+      "Event Space"
+    ],
+    "type": "Hotel",
+    "verified": true,
+    "description": "A sophisticated urban retreat in a prime location.",
+    "prices": {
+      "makeMyTrip": 8693,
+      "goibibo": 8712,
+      "bookingDotCom": 8000
+    }
   }
 ];
-
-const HOTEL_IMAGE_IDS = [
-    "1520250497591-112f2f40a3f4",
-    "1566665797739-1674de7a421a",
-    "1542314831-068cd1dbfeeb",
-    "1571896349842-33c89424de2d",
-    "1611892440504-42a792e24d32",
-    "1445019980597-93fa2acb246c",
-    "1564501049412-61c2a3083791",
-    "1618773922491-c90a47cd2547"
-];
-
-// Adding more hotels with actual hotel images
-for(let i=5; i<=20; i++) {
-  const photoId = HOTEL_IMAGE_IDS[i % HOTEL_IMAGE_IDS.length];
-  hotels.push({
-    id: i,
-    name: `The ${["Royal", "Classic", "Prime", "Elite", "Urban"][i % 5]} ${["Oasis", "Retreat", "Residency", "Plaza", "Grande"][i % 5]}`,
-    location: ["Delhi", "Mumbai", "Bangalore", "Goa", "Pune", "Kolkata"][i % 6],
-    image: `https://images.unsplash.com/photo-${photoId}?auto=format&fit=crop&q=80&w=1000`,
-    rating: (3.8 + Math.random() * 1.2).toFixed(1),
-    reviews: Math.floor(Math.random() * 2000) + 100,
-    price: 3500 + Math.floor(Math.random() * 15000),
-    amenities: ["WiFi", "Parking", "Breakfast", "AC", "Room Service"],
-    type: i % 3 === 0 ? "Boutique Hotel" : "Luxury Hotel",
-    verified: i % 2 === 0,
-    description: "Premium hospitality with modern amenities and heart-winning service."
-  });
-}
-
-hotels.forEach(h => {
-  const base = h.price;
-  h.prices = {
-    makeMyTrip: base + Math.floor(Math.random() * 1500) + 200,
-    goibibo: base + Math.floor(Math.random() * 1200),
-    yatra: base + Math.floor(Math.random() * 2000) + 500
-  };
-  const platforms = ['makeMyTrip', 'goibibo', 'yatra'];
-  const minPlatform = platforms[Math.floor(Math.random() * platforms.length)];
-  h.prices[minPlatform] = base;
-});

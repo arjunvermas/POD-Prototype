@@ -1,27 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { Plane, Filter, ChevronRight, Info, Luggage, Clock, ShieldCheck, X } from 'lucide-react';
-import { flights } from '../data/flights';
 import { useBooking } from '../context/BookingContext';
 import { findCheapest } from '../utils/priceHelper';
 import { useNavigate } from 'react-router-dom';
+import { flights as flightData } from '../data/flights';
 
 const FlightSearch = () => {
-  const [filteredFlights, setFilteredFlights] = useState(flights);
+  const [flights, setFlights] = useState([]);
+  const [filteredFlights, setFilteredFlights] = useState([]);
   const [priceRange, setPriceRange] = useState(20000);
   const [selectedStops, setSelectedStops] = useState([]);
   const [selectedAirlines, setSelectedAirlines] = useState([]);
   const [selectedTime, setSelectedTime] = useState(null);
   const [selectedFlight, setSelectedFlight] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [searchParams, setSearchParams] = useState({
+    origin: 'DEL',
+    destination: 'BOM',
+    departureDate: '2026-05-10',
+    adults: 1
+  });
   const { setBookingData } = useBooking();
   const navigate = useNavigate();
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
   useEffect(() => {
     let result = flights.filter(f => f.price <= priceRange);
-    
+
     if (selectedStops.length > 0) {
       result = result.filter(f => selectedStops.includes(f.stops));
     }
-    
+
     if (selectedAirlines.length > 0) {
       result = result.filter(f => selectedAirlines.includes(f.airline));
     }
@@ -29,9 +39,26 @@ const FlightSearch = () => {
     if (selectedTime) {
       result = result.filter(f => f.category === selectedTime);
     }
-    
+
     setFilteredFlights(result);
-  }, [priceRange, selectedStops, selectedAirlines, selectedTime]);
+  }, [flights, priceRange, selectedStops, selectedAirlines, selectedTime]);
+
+  useEffect(() => {
+    setFlights(flightData);
+  }, []);
+
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setTimeout(() => {
+      const result = flightData.filter(f => 
+        (!searchParams.origin || f.origin.toLowerCase().includes(searchParams.origin.toLowerCase())) && 
+        (!searchParams.destination || f.destination.toLowerCase().includes(searchParams.destination.toLowerCase()))
+      );
+      setFlights(result.length > 0 ? result : flightData);
+      setLoading(false);
+    }, 500);
+  };
 
   const handleBook = (flight) => {
     setBookingData({ type: 'flight', item: flight });
@@ -48,7 +75,56 @@ const FlightSearch = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col lg:flex-row gap-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <form onSubmit={handleSearchSubmit} className="mb-8 rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+        <div className="grid gap-4 lg:grid-cols-4">
+          <label className="block">
+            <span className="text-sm font-bold text-gray-700">Origin (IATA)</span>
+            <input
+              value={searchParams.origin}
+              onChange={(e) => setSearchParams({ ...searchParams, origin: e.target.value.toUpperCase() })}
+              placeholder="DEL"
+              className="mt-2 w-full rounded-2xl border border-gray-200 p-3 text-sm outline-none focus:border-primary"
+            />
+          </label>
+          <label className="block">
+            <span className="text-sm font-bold text-gray-700">Destination (IATA)</span>
+            <input
+              value={searchParams.destination}
+              onChange={(e) => setSearchParams({ ...searchParams, destination: e.target.value.toUpperCase() })}
+              placeholder="BOM"
+              className="mt-2 w-full rounded-2xl border border-gray-200 p-3 text-sm outline-none focus:border-primary"
+            />
+          </label>
+          <label className="block">
+            <span className="text-sm font-bold text-gray-700">Departure Date</span>
+            <input
+              type="date"
+              value={searchParams.departureDate}
+              onChange={(e) => setSearchParams({ ...searchParams, departureDate: e.target.value })}
+              className="mt-2 w-full rounded-2xl border border-gray-200 p-3 text-sm outline-none focus:border-primary"
+            />
+          </label>
+          <label className="block">
+            <span className="text-sm font-bold text-gray-700">Passengers</span>
+            <input
+              type="number"
+              min="1"
+              value={searchParams.adults}
+              onChange={(e) => setSearchParams({ ...searchParams, adults: Math.max(1, Number(e.target.value)) })}
+              className="mt-2 w-full rounded-2xl border border-gray-200 p-3 text-sm outline-none focus:border-primary"
+            />
+          </label>
+        </div>
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="text-sm text-gray-500">Search live flight prices from Skyscanner via RapidAPI. If no API key is configured, the page falls back to sample results.</div>
+          <button type="submit" className="inline-flex items-center justify-center rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-white transition hover:bg-primary-dark">
+            {loading ? 'Searching...' : 'Search Flights'}
+          </button>
+        </div>
+        {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
+      </form>
+      <div className="flex flex-col lg:flex-row gap-8">
       {/* Sidebar Filters */}
       <aside className="w-full lg:w-72 space-y-8">
         <div className="glass rounded-3xl p-6 shadow-sm border border-gray-100">
@@ -222,28 +298,27 @@ const FlightSearch = () => {
                 {/* Price Comparison Widget */}
                 <div className="bg-gray-50/50 rounded-2xl p-4 border border-gray-100/50">
                   <div className="flex justify-between items-center mb-3">
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Live Comparison</span>
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Compare & Save</span>
                     <span className="text-[10px] font-black bg-green-500 text-white px-2 py-1 rounded-md animate-pulse">Lowest Price</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex -space-x-2">
-                      {(() => {
-                        const { sorted } = findCheapest(flight.prices);
-                        const colorMap = { MakeMyTrip: 'bg-blue-500', Goibibo: 'bg-yellow-500', Yatra: 'bg-red-500' };
-                        return sorted.map((ota, i) => (
-                          <div key={i} className={`w-8 h-8 rounded-full border-2 border-white ${colorMap[ota.platform] || 'bg-gray-500'} flex items-center justify-center text-[8px] font-black text-white relative group cursor-help z-[${30 - i * 10}]`}>
-                            {ota.platform.substring(0, 3).toUpperCase()}
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white rounded text-[10px] opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap z-50">
-                              {ota.platform}: ₹{ota.price.toLocaleString()}
-                            </div>
+                  <div className="space-y-2">
+                    {(() => {
+                      const { sorted } = findCheapest(flight.prices);
+                      return sorted.map((site, i) => {
+                        const isCheapest = i === 0;
+                        return (
+                          <div key={i} className={`flex justify-between items-center p-2 rounded-xl transition-all ${isCheapest ? 'bg-white shadow-sm border border-primary/20' : 'hover:bg-gray-100/50'}`}>
+                            <span className={`text-xs font-bold ${isCheapest ? 'text-primary-dark' : 'text-gray-500'}`}>{site.platform}</span>
+                            <span className={`text-sm ${isCheapest ? 'font-black text-primary-dark' : 'font-bold text-gray-400'}`}>
+                              ₹{site.price.toLocaleString()}
+                            </span>
                           </div>
-                        ));
-                      })()}
-                    </div>
-                    <div className="text-right">
-                      <span className="text-[10px] font-bold text-gray-500 block">You Save</span>
-                      <span className="text-sm font-black text-green-600">₹{findCheapest(flight.prices).savingsAmount.toLocaleString()} ({findCheapest(flight.prices).savingsPercent}%)</span>
-                    </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                  <div className="mt-2 text-right">
+                    <span className="text-[10px] font-bold text-green-600">Save {findCheapest(flight.prices).savingsPercent}% vs highest price</span>
                   </div>
                 </div>
               </div>
@@ -259,6 +334,8 @@ const FlightSearch = () => {
           )}
         </div>
       </main>
+
+      </div>
 
       {/* Flight Detail Modal */}
       {selectedFlight && (

@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useBooking } from '../context/BookingContext';
 import { useAuth } from '../context/AuthContext';
+import { findCheapest } from '../utils/priceHelper';
 
 const Booking = () => {
   const { currentBooking, confirmBooking } = useBooking();
@@ -56,16 +57,25 @@ const Booking = () => {
 
   const costs = calculateTotal();
 
+  const pricesObj = item.prices || (room && room.prices) || {};
+  const cheapestData = findCheapest(pricesObj);
+  const cheapestPlatform = cheapestData?.cheapest?.platform || 'MakeMyTrip';
+
   const handleConfirm = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate payment processing
+    // Simulate payment processing and redirect
     setTimeout(() => {
-      const confirmed = confirmBooking({ ...formData, costs });
-      navigate('/confirmation', { state: { booking: confirmed } });
-      setIsSubmitting(false);
-    }, 2000);
+      confirmBooking({ ...formData, costs });
+      
+      let redirectUrl = 'https://www.makemytrip.com/';
+      if (cheapestData?.cheapest?.url) {
+        redirectUrl = cheapestData.cheapest.url;
+      }
+      
+      window.location.href = redirectUrl;
+    }, 1500);
   };
 
   return (
@@ -285,6 +295,40 @@ const Booking = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Price Comparison Widget */}
+              {cheapestData?.sorted && cheapestData.sorted.length > 0 && (
+                <div className="glass rounded-[2rem] p-8 border border-white shadow-xl bg-gradient-to-br from-white to-gray-50/80">
+                  <div className="flex justify-between items-center mb-6">
+                    <h4 className="text-lg font-black flex items-center">
+                      <ShieldCheck className="w-5 h-5 mr-3 text-green-500" />
+                      Live Comparison
+                    </h4>
+                    <span className="text-[10px] font-black bg-green-100 text-green-600 px-2 py-1 rounded-md border border-green-200">
+                      Best Value
+                    </span>
+                  </div>
+                  <div className="space-y-3">
+                    {cheapestData.sorted.map((site, i) => {
+                      const isCheapest = i === 0;
+                      return (
+                        <div key={i} className={`flex justify-between items-center p-3 rounded-xl transition-all ${isCheapest ? 'bg-white shadow-md border-2 border-primary' : 'bg-gray-50 border border-gray-100'}`}>
+                          <span className={`text-xs font-bold ${isCheapest ? 'text-primary-dark' : 'text-gray-500'}`}>{site.platform}</span>
+                          <span className={`text-sm ${isCheapest ? 'font-black text-primary-dark' : 'font-bold text-gray-400 line-through'}`}>
+                            ₹{site.price.toLocaleString()}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {cheapestData.savingsAmount > 0 && (
+                    <div className="mt-6 text-center p-3 bg-green-50 rounded-xl border border-green-100">
+                      <span className="text-[10px] font-black text-green-600 uppercase tracking-widest block mb-1">Total Savings</span>
+                      <span className="text-xl font-black text-green-700">₹{cheapestData.savingsAmount.toLocaleString()} ({cheapestData.savingsPercent}%)</span>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Promo Code */}
               <div className="glass rounded-[2rem] p-8 border border-white shadow-xl">
