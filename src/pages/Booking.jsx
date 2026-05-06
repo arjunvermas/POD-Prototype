@@ -164,7 +164,7 @@ const Booking = () => {
                 </div>
               </section>
 
-              {/* Payment Selection */}
+              {/* Payment Selection
               <section className="glass rounded-[3rem] p-10 border border-white shadow-xl">
                 <h3 className="text-2xl font-black mb-10 flex items-center">
                   <CreditCard className="w-6 h-6 mr-4 text-primary" />
@@ -222,7 +222,7 @@ const Booking = () => {
                     </div>
                   </div>
                 )}
-              </section>
+              </section> */}
 
               <button 
                 type="submit"
