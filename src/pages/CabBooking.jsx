@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Car, MapPin, Calendar, Clock, Search, ChevronRight, 
-  Users, Briefcase, ShieldCheck, CheckCircle2 
+  Users, Briefcase, ShieldCheck, CheckCircle2, Star, Zap
 } from 'lucide-react';
 import { cabs, recentRoutes } from '../data/cabs';
 import { useBooking } from '../context/BookingContext';
@@ -15,23 +15,49 @@ const CabBooking = () => {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [showResults, setShowResults] = useState(false);
+  const [selectedRideClass, setSelectedRideClass] = useState('all');
+  const [formNotice, setFormNotice] = useState('');
   const { setBookingData } = useBooking();
   const navigate = useNavigate();
 
+  const today = new Date().toISOString().split('T')[0];
+
   const handleSearch = (e) => {
     e.preventDefault();
-    if (pickup && drop && date && time) {
-      setShowResults(true);
-    }
+    setPickup(current => current || locations[0]);
+    setDrop(current => current || locations[3]);
+    setDate(current => current || today);
+    setTime(current => current || '10:00');
+    setFormNotice(pickup && drop && date && time ? '' : 'Showing cab options with default route details. You can adjust them anytime.');
+    setShowResults(true);
   };
 
-  const handleBook = (cab) => {
+  const getBookingDetails = () => ({
+    pickup: pickup || locations[0],
+    drop: drop || locations[3],
+    date: date || today,
+    time: time || '10:00',
+    serviceType: activeTab
+  });
+
+  const handleBook = (cab, provider = null) => {
     setBookingData({ 
       type: 'cab', 
       item: cab, 
-      details: { pickup, drop, date, time, serviceType: activeTab } 
+      details: getBookingDetails(),
+      selectedProvider: provider || findCheapest(cab.prices).cheapest
     });
     navigate('/booking');
+  };
+
+  const handleRouteSelect = (route) => {
+    setPickup(route.pickup || route.from);
+    setDrop(route.drop || route.to);
+    setDate(today);
+    setTime('10:00');
+    setSelectedRideClass('all');
+    setFormNotice(`Showing rides for ${route.from} to ${route.to}.`);
+    setShowResults(true);
   };
 
   const locations = [
@@ -44,6 +70,16 @@ const CabBooking = () => {
     "Hitech City, Hyderabad",
     "Salt Lake City, Kolkata"
   ];
+
+  const rideFilters = [
+    { id: 'all', label: 'All rides' },
+    { id: 'fastest', label: 'Fastest' },
+    { id: 'economy', label: 'Economy' },
+    { id: 'premiere', label: 'Premiere' },
+    { id: 'slowest', label: 'Slowest' }
+  ];
+
+  const displayedCabs = cabs.filter(cab => selectedRideClass === 'all' || cab.rideClass === selectedRideClass);
 
   return (
     <div className="pb-24">
@@ -74,7 +110,7 @@ const CabBooking = () => {
             </div>
 
             <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-              <div className="lg:col-span-1.5 p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center space-x-3 group focus-within:bg-white focus-within:border-white transition-all">
+              <div className="lg:col-span-1 p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center space-x-3 group focus-within:bg-white focus-within:border-white transition-all">
                 <MapPin className="w-5 h-5 text-primary group-focus-within:text-indigo-900" />
                 <div className="flex-grow text-left">
                   <label className="block text-[10px] font-bold text-indigo-200 uppercase tracking-widest group-focus-within:text-gray-400">Pickup</label>
@@ -89,7 +125,7 @@ const CabBooking = () => {
                 </div>
               </div>
 
-              <div className="lg:col-span-1.5 p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center space-x-3 group focus-within:bg-white focus-within:border-white transition-all">
+              <div className="lg:col-span-1 p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center space-x-3 group focus-within:bg-white focus-within:border-white transition-all">
                 <MapPin className="w-5 h-5 text-secondary group-focus-within:text-indigo-900" />
                 <div className="flex-grow text-left">
                   <label className="block text-[10px] font-bold text-indigo-200 uppercase tracking-widest group-focus-within:text-gray-400">Drop</label>
@@ -137,6 +173,19 @@ const CabBooking = () => {
                 <Search className="w-6 h-6" />
               </button>
             </form>
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-xs font-bold text-indigo-100">
+              <span>Compare Ola, Uber, and Rapido instantly.</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setFormNotice('Showing all cab categories with sample route details.');
+                  setShowResults(true);
+                }}
+                className="rounded-full bg-white/10 px-4 py-2 text-white transition hover:bg-white/20"
+              >
+                Browse all cabs
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -147,12 +196,32 @@ const CabBooking = () => {
             <div className="flex justify-between items-end">
               <div>
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">Available Options</h2>
-                <p className="text-gray-500 font-medium font-sm">Estimated fare for your route</p>
+                <p className="text-gray-500 font-medium font-sm">Best live-style fares across Ola, Uber, and Rapido</p>
+                {formNotice && <p className="mt-2 text-sm font-bold text-primary">{formNotice}</p>}
               </div>
             </div>
 
+            <div className="flex flex-wrap gap-3">
+              {rideFilters.map(filter => (
+                <button
+                  key={filter.id}
+                  type="button"
+                  onClick={() => setSelectedRideClass(filter.id)}
+                  className={`rounded-2xl border px-5 py-3 text-sm font-bold transition-all ${
+                    selectedRideClass === filter.id
+                      ? 'border-primary bg-primary text-white shadow-lg shadow-primary/20'
+                      : 'border-gray-100 bg-white text-gray-600 hover:border-primary/40 hover:text-primary'
+                  }`}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {cabs.map(cab => (
+              {displayedCabs.map(cab => {
+                const cheapest = findCheapest(cab.prices).cheapest;
+                return (
                 <div key={cab.id} className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden group">
                   <div className="h-48 relative overflow-hidden bg-gray-50 p-6">
                     <img src={cab.image} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700" alt={cab.model} />
@@ -169,6 +238,14 @@ const CabBooking = () => {
                           <span className="flex items-center"><Users className="w-4 h-4 mr-1 text-primary" /> {cab.capacity}</span>
                           <span className="flex items-center"><Briefcase className="w-4 h-4 mr-1 text-primary" /> 2 Bags</span>
                         </div>
+                        <div className="mt-3 flex flex-wrap gap-2 text-xs font-bold">
+                          <span className="inline-flex items-center rounded-full bg-yellow-50 px-3 py-1 text-yellow-700">
+                            <Star className="mr-1 h-3 w-3 fill-yellow-500 text-yellow-500" /> {cab.rating}
+                          </span>
+                          <span className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-blue-700">
+                            <Zap className="mr-1 h-3 w-3" /> {cab.eta}
+                          </span>
+                        </div>
                       </div>
                     </div>
 
@@ -184,8 +261,8 @@ const CabBooking = () => {
                     {/* Cab Comparison */}
                     <div className="bg-gray-50/50 rounded-2xl p-4 border border-gray-100/50 mb-6">
                       <div className="flex justify-between items-center mb-3">
-                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Compare & Save</span>
-                        <span className="text-[10px] font-black bg-green-500 text-white px-2 py-1 rounded-md animate-pulse">Lowest Price</span>
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ola vs Uber vs Rapido</span>
+                        <span className="text-[10px] font-black bg-green-500 text-white px-2 py-1 rounded-md animate-pulse">Best Price</span>
                       </div>
                       <div className="space-y-2">
                         {(() => {
@@ -200,14 +277,14 @@ const CabBooking = () => {
                                   setBookingData({ 
                                     type: 'cab', 
                                     item: cab, 
-                                    details: { pickup, drop, date, time, serviceType: activeTab },
+                                    details: getBookingDetails(),
                                     selectedProvider: site
                                   });
                                   navigate('/booking');
                                 }}
                                 className={`flex justify-between items-center p-2 rounded-xl transition-all cursor-pointer ${isCheapest ? 'bg-white shadow-sm border border-primary/20 hover:border-primary' : 'hover:bg-gray-100/50 hover:border hover:border-gray-300'}`}
                               >
-                                <span className={`text-xs font-bold ${isCheapest ? 'text-primary-dark' : 'text-gray-500'}`}>{site.platform}</span>
+                                <span className={`text-xs font-bold ${isCheapest ? 'text-primary-dark' : 'text-gray-500'}`}>Book via {site.platform}</span>
                                 <span className={`text-sm ${isCheapest ? 'font-black text-primary-dark' : 'font-bold text-gray-400 line-through'}`}>
                                   ₹{site.price.toLocaleString()}
                                 </span>
@@ -217,25 +294,40 @@ const CabBooking = () => {
                         })()}
                       </div>
                       <div className="mt-2 text-right">
-                        <span className="text-[10px] font-bold text-green-600">Save {findCheapest(cab.prices).savingsPercent}% vs highest price</span>
+                        <span className="text-[10px] font-bold text-green-600">Best: {cheapest.platform} saves {findCheapest(cab.prices).savingsPercent}% vs highest price</span>
                       </div>
+                    </div>
+
+                    <div className="mb-6 grid grid-cols-3 gap-2">
+                      {findCheapest(cab.prices).sorted.map(site => (
+                        <button
+                          key={site.platform}
+                          type="button"
+                          onClick={() => handleBook(cab, site)}
+                          className="rounded-xl border border-gray-100 px-2 py-2 text-[11px] font-black text-gray-600 transition-all hover:border-primary hover:bg-primary hover:text-white"
+                        >
+                          {site.platform}
+                        </button>
+                      ))}
                     </div>
 
                     <div className="pt-6 border-t border-gray-50 flex justify-between items-center">
                       <div>
                         <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Estimated Fare</div>
-                        <span className="text-3xl font-black text-gray-900">₹{cab.baseFare.toLocaleString()}</span>
+                        <span className="text-3xl font-black text-gray-900">₹{cheapest.price.toLocaleString()}</span>
+                        <div className="text-xs font-bold text-primary mt-1">via {cheapest.platform}</div>
                       </div>
                       <button 
-                        onClick={() => handleBook(cab)}
+                        onClick={() => handleBook(cab, cheapest)}
                         className="bg-primary text-white px-8 py-3.5 rounded-2xl font-bold transition-all hover:shadow-xl hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
                       >
-                        Book Now
+                        Book Best
                       </button>
                     </div>
                   </div>
                 </div>
-              ))}
+              );
+              })}
             </div>
           </div>
         ) : (
@@ -266,7 +358,11 @@ const CabBooking = () => {
                         <span className="text-sm font-bold text-gray-900">{route.to}</span>
                       </div>
                     </div>
-                    <button className="w-full mt-8 py-3 border border-gray-100 rounded-xl text-sm font-bold text-gray-600 hover:bg-primary hover:text-white hover:border-primary transition-all flex items-center justify-center group">
+                    <button
+                      type="button"
+                      onClick={() => handleRouteSelect(route)}
+                      className="w-full mt-8 py-3 border border-gray-100 rounded-xl text-sm font-bold text-gray-600 hover:bg-primary hover:text-white hover:border-primary transition-all flex items-center justify-center group"
+                    >
                       <span>Book Now</span>
                       <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                     </button>

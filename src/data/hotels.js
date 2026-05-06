@@ -16,6 +16,8 @@ export const hotels = [
     ],
     "type": "Resort",
     "verified": true,
+    "familyFriendly": true,
+    "safetyScore": 94,
     "description": "A luxury resort steps away from the beach with world-class dining.",
     "prices": {
       "makeMyTrip": 9435,
@@ -40,6 +42,8 @@ export const hotels = [
     ],
     "type": "Resort",
     "verified": true,
+    "familyFriendly": true,
+    "safetyScore": 96,
     "description": "Experience paradise in our overwater bungalows.",
     "prices": {
       "makeMyTrip": 45345,
@@ -63,6 +67,8 @@ export const hotels = [
     ],
     "type": "Hotel",
     "verified": true,
+    "familyFriendly": false,
+    "safetyScore": 89,
     "description": "Classic French elegance in the heart of the city.",
     "prices": {
       "makeMyTrip": 22000,
@@ -86,6 +92,8 @@ export const hotels = [
     ],
     "type": "Hotel",
     "verified": false,
+    "familyFriendly": false,
+    "safetyScore": 81,
     "description": "Modern luxury with stunning views of the marina.",
     "prices": {
       "makeMyTrip": 18000,
@@ -110,6 +118,8 @@ export const hotels = [
     ],
     "type": "Luxury Hotel",
     "verified": true,
+    "familyFriendly": true,
+    "safetyScore": 98,
     "description": "Iconic heritage hotel overlooking the Gateway of India.",
     "prices": {
       "makeMyTrip": 26075,
@@ -134,6 +144,8 @@ export const hotels = [
     ],
     "type": "Luxury Hotel",
     "verified": true,
+    "familyFriendly": true,
+    "safetyScore": 97,
     "description": "A regal property offering unparalleled luxury in the capital.",
     "prices": {
       "makeMyTrip": 21229,
@@ -158,6 +170,8 @@ export const hotels = [
     ],
     "type": "Luxury Hotel",
     "verified": true,
+    "familyFriendly": true,
+    "safetyScore": 93,
     "description": "Luxury meets nature in this premium eco-friendly hotel.",
     "prices": {
       "makeMyTrip": 15000,
@@ -182,6 +196,8 @@ export const hotels = [
     ],
     "type": "Luxury Hotel",
     "verified": true,
+    "familyFriendly": true,
+    "safetyScore": 92,
     "description": "Opulent seaside stay with breathtaking sunset views.",
     "prices": {
       "makeMyTrip": 19000,
@@ -206,6 +222,8 @@ export const hotels = [
     ],
     "type": "Business Hotel",
     "verified": true,
+    "familyFriendly": false,
+    "safetyScore": 86,
     "description": "Ideal for business travelers with modern amenities.",
     "prices": {
       "makeMyTrip": 9500,
@@ -230,6 +248,8 @@ export const hotels = [
     ],
     "type": "Hotel",
     "verified": true,
+    "familyFriendly": true,
+    "safetyScore": 90,
     "description": "A sophisticated urban retreat in a prime location.",
     "prices": {
       "makeMyTrip": 8693,

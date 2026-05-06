@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plane, Hotel, Car, Package, Compass, User, LogOut, Menu, X, Bell } from 'lucide-react';
+import { Plane, Hotel, Car, Package, Compass, User, LogOut, Menu, X, Bell, Utensils } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
@@ -12,6 +12,7 @@ const Navbar = () => {
     { name: 'Flights', icon: Plane, path: '/flights' },
     { name: 'Hotels', icon: Hotel, path: '/hotels' },
     { name: 'Cabs', icon: Car, path: '/cabs' },
+    { name: 'Restaurants', icon: Utensils, path: '/restaurants' },
     { name: 'Packages', icon: Package, path: '/packages' },
     { name: 'Trip Planner', icon: Compass, path: '/trip-planner' },
   ];

@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
+import ThemeSidebar from './components/common/ThemeSidebar';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
@@ -12,6 +13,7 @@ import FlightSearch from './pages/FlightSearch';
 import HotelSearch from './pages/HotelSearch';
 import HotelDetail from './pages/HotelDetail';
 import CabBooking from './pages/CabBooking';
+import Restaurants from './pages/Restaurants';
 import Packages from './pages/Packages';
 import PackageDetail from './pages/PackageDetail';
 import TripPlanner from './pages/TripPlanner';
@@ -35,7 +37,7 @@ function App() {
       <AuthProvider>
         <SearchProvider>
         <BookingProvider>
-          <div className="flex flex-col min-h-screen bg-gray-50">
+          <div className="app-shell flex flex-col min-h-screen">
             <Navbar />
             <main className="flex-grow">
               <Routes>
@@ -44,6 +46,7 @@ function App() {
                 <Route path="/hotels" element={<HotelSearch />} />
                 <Route path="/hotels/:id" element={<HotelDetail />} />
                 <Route path="/cabs" element={<CabBooking />} />
+                <Route path="/restaurants" element={<Restaurants />} />
                 <Route path="/packages" element={<Packages />} />
                 <Route path="/packages/:id" element={<PackageDetail />} />
                 <Route path="/trip-planner" element={<TripPlanner />} />
@@ -58,6 +61,7 @@ function App() {
               </Routes>
             </main>
             <Footer />
+            <ThemeSidebar />
           </div>
         </BookingProvider>
         </SearchProvider>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plane, Hotel, Car, Package, Search } from 'lucide-react';
+import { Plane, Hotel, Car, Package, Search, Utensils } from 'lucide-react';
 import { useSearch } from '../../context/SearchContext';
 
 const SearchWidget = () => {
@@ -17,6 +17,7 @@ const SearchWidget = () => {
     { id: 'flights', label: 'Flights', icon: Plane },
     { id: 'hotels', label: 'Hotels', icon: Hotel },
     { id: 'cabs', label: 'Cabs', icon: Car },
+    { id: 'restaurants', label: 'Restaurants', icon: Utensils },
     { id: 'packages', label: 'Packages', icon: Package },
   ];
 

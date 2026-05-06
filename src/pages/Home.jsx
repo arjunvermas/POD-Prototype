@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Plane, Hotel, Car, Package, Compass, FileText, 
-  Tag, Headset, Bell, ArrowRight, Star, Quote, Search 
+  Tag, Headset, Bell, ArrowRight, Star, Quote, Search, Utensils
 } from 'lucide-react';
 import SearchWidget from '../components/home/SearchWidget';
 import { destinations } from '../data/destinations';
@@ -15,6 +15,7 @@ const Home = () => {
     { icon: Plane, title: "Flight Booking", desc: "Global reach with 500+ airlines", color: "bg-blue-50 text-blue-600" },
     { icon: Hotel, title: "Hotel Booking", desc: "Best prices on 1M+ properties", color: "bg-teal-50 text-teal-600" },
     { icon: Car, title: "Cab Booking", desc: "Safe and reliable airport transfers", color: "bg-orange-50 text-orange-600" },
+    { icon: Utensils, title: "Restaurants", desc: "Menus, safety scores, and delivery deals", color: "bg-emerald-50 text-emerald-600", path: "/restaurants" },
     { icon: Package, title: "Travel Packages", desc: "Curated experiences just for you", color: "bg-purple-50 text-purple-600" },
     { icon: Compass, title: "AI Trip Planner", desc: "Plan your trip in seconds with AI", color: "bg-pink-50 text-pink-600" },
     { icon: FileText, title: "Itinerary Generator", desc: "Export detailed travel plans", color: "bg-yellow-50 text-yellow-600" },
@@ -59,7 +60,13 @@ const Home = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, idx) => (
-            <div key={idx} className="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group">
+            <div
+              key={idx}
+              onClick={() => feature.path && navigate(feature.path)}
+              className={`p-8 bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group ${
+                feature.path ? 'cursor-pointer' : ''
+              }`}
+            >
               <div className={`w-14 h-14 ${feature.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
                 <feature.icon className="w-7 h-7" />
               </div>

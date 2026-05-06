@@ -84,6 +84,11 @@ const HotelDetail = () => {
                   <span className="text-gray-900 font-bold mr-1">{hotel.rating}</span>
                   ({hotel.reviews} reviews)
                 </div>
+                <div className="flex items-center">
+                  <ShieldCheck className="w-4 h-4 mr-1 text-primary" />
+                  <span className="text-gray-900 font-bold mr-1">{hotel.safetyScore}/100</span>
+                  safety for women and minors
+                </div>
               </div>
             </div>
 
@@ -112,6 +117,12 @@ const HotelDetail = () => {
                   <Dumbbell className="w-6 h-6 text-primary" />
                   <span className="font-medium">Gym Access</span>
                 </div>
+                {hotel.familyFriendly && (
+                  <div className="flex items-center space-x-4">
+                    <ShieldCheck className="w-6 h-6 text-primary" />
+                    <span className="font-medium">Family Friendly</span>
+                  </div>
+                )}
               </div>
             </div>
 

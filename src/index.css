@@ -10,6 +10,15 @@
   color-scheme: light;
   color: #1f2937;
   background-color: #f9fafb;
+  --app-bg: #f9fafb;
+  --app-theme-accent: #0d9488;
+  --app-theme-glow: rgba(13, 148, 136, 0.2);
+  --app-surface: #ffffff;
+  --app-surface-strong: #f8fafc;
+  --app-surface-soft: #f1f5f9;
+  --app-text: #1f2937;
+  --app-muted: #64748b;
+  --app-border: #e5e7eb;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -22,7 +31,162 @@ body {
   min-width: 320px;
   min-height: 100vh;
   color: #1f2937;
-  background-color: #f9fafb;
+  background-color: var(--app-bg);
+  transition: background-color 180ms ease;
+}
+
+.app-shell {
+  background-color: var(--app-bg);
+  transition: background-color 180ms ease;
+}
+
+.app-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 12% 18%, var(--app-theme-glow), transparent 28rem),
+    radial-gradient(circle at 88% 12%, color-mix(in srgb, var(--app-theme-accent) 22%, transparent), transparent 24rem),
+    radial-gradient(circle at 72% 86%, var(--app-theme-glow), transparent 30rem);
+  opacity: 0.55;
+}
+
+.app-shell > nav,
+.app-shell > main,
+.app-shell > footer {
+  position: relative;
+  z-index: 1;
+}
+
+.app-shell main > .bg-gray-50 {
+  background-color: transparent;
+}
+
+.app-shell :is(
+  .bg-white,
+  .bg-gray-50,
+  .bg-gray-100,
+  .bg-gray-200
+) {
+  background-color: var(--app-surface) !important;
+}
+
+html[data-app-theme-tone="dark"] .app-shell :is(
+  .bg-gray-800,
+  .bg-gray-900,
+  .bg-gray-950,
+  .bg-black
+) {
+  background-color: var(--app-surface) !important;
+}
+
+.app-shell :is(
+  .bg-blue-50,
+  .bg-indigo-50,
+  .bg-purple-50,
+  .bg-pink-50,
+  .bg-red-50,
+  .bg-orange-50,
+  .bg-yellow-50,
+  .bg-green-50,
+  .bg-teal-50,
+  .bg-cyan-50,
+  .bg-emerald-50
+) {
+  background-color: var(--app-surface-soft) !important;
+}
+
+.app-shell :is(
+  .bg-primary,
+  .hover\:bg-primary:hover,
+  .focus\:bg-primary:focus
+) {
+  background-color: var(--app-theme-accent) !important;
+}
+
+.app-shell [class*="bg-gray-50/"],
+.app-shell [class*="bg-gray-100/"],
+.app-shell [class*="bg-gray-200/"],
+.app-shell [class*="bg-primary/"] {
+  background-color: var(--app-surface-soft) !important;
+}
+
+.app-shell :is(
+  .text-gray-900,
+  .text-gray-800,
+  .text-gray-700,
+  .text-gray-600
+) {
+  color: var(--app-text) !important;
+}
+
+.app-shell :is(
+  .text-gray-500,
+  .text-gray-400,
+  .text-gray-300,
+  .text-gray-200
+) {
+  color: var(--app-muted) !important;
+}
+
+.app-shell :is(
+  .text-primary,
+  .text-primary-dark,
+  .text-primary-light,
+  .hover\:text-primary:hover
+) {
+  color: var(--app-theme-accent) !important;
+}
+
+.app-shell :is(
+  .border-gray-50,
+  .border-gray-100,
+  .border-gray-200,
+  .border-gray-300,
+  .border-white,
+  .border-primary,
+  .border-primary\/20
+) {
+  border-color: var(--app-border) !important;
+}
+
+.app-shell input,
+.app-shell select,
+.app-shell textarea {
+  background-color: var(--app-surface-soft) !important;
+  border-color: var(--app-border) !important;
+  color: var(--app-text) !important;
+}
+
+.app-shell input::placeholder,
+.app-shell textarea::placeholder {
+  color: var(--app-muted) !important;
+}
+
+.app-shell .shadow-gray-200\/50,
+.app-shell .shadow-gray-400\/20,
+.app-shell .shadow-primary\/20,
+.app-shell .shadow-primary\/30 {
+  box-shadow: 0 20px 45px var(--app-theme-glow) !important;
+}
+
+html[data-app-theme-tone="dark"] .app-shell {
+  color: var(--app-text);
+}
+
+html[data-app-theme-tone="dark"] .app-shell :is(.glass, nav.glass) {
+  background: rgba(15, 23, 42, 0.78) !important;
+  border-color: var(--app-border) !important;
+}
+
+html[data-app-theme-tone="dark"] .app-shell img {
+  box-shadow: 0 0 0 1px var(--app-border);
+}
+
+html[data-app-theme-tone="dark"] .app-shell :is(.text-white, .text-indigo-100, .text-gray-100) {
+  color: #f8fafc !important;
 }
 
 /* Glassmorphism utility */

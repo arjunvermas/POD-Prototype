@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   Hotel, Star, MapPin, Search, LayoutGrid, List, Filter,
-  Wifi, Coffee, Car, Dumbbell, ShieldCheck, CheckCircle2
+  Wifi, Coffee, Car, Dumbbell, ShieldCheck, CheckCircle2, Users
 } from 'lucide-react';
 import { findCheapest } from '../utils/priceHelper';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +14,7 @@ const HotelSearch = () => {
   const [priceRange, setPriceRange] = useState(50000);
   const [selectedRating, setSelectedRating] = useState(0);
   const [selectedAmenities, setSelectedAmenities] = useState([]);
+  const [familyFriendlyOnly, setFamilyFriendlyOnly] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [searchParams, setSearchParams] = useState({
@@ -38,8 +39,12 @@ const HotelSearch = () => {
       );
     }
 
+    if (familyFriendlyOnly) {
+      result = result.filter(h => h.familyFriendly);
+    }
+
     setFilteredHotels(result);
-  }, [hotels, priceRange, selectedRating, selectedAmenities]);
+  }, [hotels, priceRange, selectedRating, selectedAmenities, familyFriendlyOnly]);
 
   useEffect(() => {
     setHotels(hotelData);
@@ -181,6 +186,26 @@ const HotelSearch = () => {
                   ))}
                 </div>
               </div>
+
+              <div>
+                <label className="text-sm font-bold text-gray-700 block mb-4">Trip Safety</label>
+                <button
+                  type="button"
+                  onClick={() => setFamilyFriendlyOnly(!familyFriendlyOnly)}
+                  className={`w-full flex items-center justify-between rounded-xl border p-3 text-sm transition-all ${
+                    familyFriendlyOnly ? 'border-primary bg-primary/5 text-primary' : 'border-gray-100 text-gray-600'
+                  }`}
+                >
+                  <span className="flex items-center font-bold">
+                    <Users className="mr-2 h-4 w-4" />
+                    Family friendly
+                  </span>
+                  <CheckCircle2 className={`h-4 w-4 ${familyFriendlyOnly ? 'opacity-100' : 'opacity-0'}`} />
+                </button>
+                <p className="mt-3 text-xs leading-5 text-gray-400">
+                  Safety score highlights suitability for women and minors.
+                </p>
+              </div>
             </div>
           </div>
         </aside>
@@ -235,6 +260,9 @@ const HotelSearch = () => {
                       <ShieldCheck className="w-4 h-4" />
                     </div>
                   )}
+                  <div className="absolute bottom-4 left-4 rounded-full bg-white/90 px-3 py-1.5 text-xs font-black text-gray-800 shadow-sm">
+                    Safety {hotel.safetyScore}/100
+                  </div>
                 </div>
 
                 <div className="p-6 flex-grow flex flex-col justify-between">
@@ -247,6 +275,10 @@ const HotelSearch = () => {
                       {hotel.location}
                     </div>
                     <div className="flex flex-wrap gap-2 mb-6">
+                      {hotel.familyFriendly && (
+                        <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-600 px-2 py-1 rounded-md">Family Friendly</span>
+                      )}
+                      <span className="text-[10px] font-bold uppercase tracking-wider bg-green-50 text-green-600 px-2 py-1 rounded-md">Women & Minors {hotel.safetyScore}/100</span>
                       {hotel.amenities.slice(0, 3).map(a => (
                         <span key={a} className="text-[10px] font-bold uppercase tracking-wider bg-gray-100 text-gray-500 px-2 py-1 rounded-md">{a}</span>
                       ))}
