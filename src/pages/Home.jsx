@@ -41,9 +41,9 @@ const Home = () => {
           <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 tracking-tight">
             Discover Your Next <span className="text-primary-light">Great Adventure</span>
           </h1>
-          <p className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto leading-relaxed">
+          {/* <p className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto leading-relaxed">
             From sunrise beach escapes to mountain retreats, we provide everything you need to make your journey unforgettable.
-          </p>
+          </p> */}
         </div>
       </section>
 
