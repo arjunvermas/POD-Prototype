@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -18,7 +19,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 glass shadow-sm">
+    <nav className="sticky top-0 z-[999] glass shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
@@ -40,30 +41,33 @@ const Navbar = () => {
               ))}
             </div>
           </div>
-          
+
           <div className="hidden md:flex items-center space-x-4">
-            <button className="p-2 text-gray-500 hover:text-primary transition-colors hover:bg-gray-100 rounded-full">
-              <Bell className="w-5 h-5" />
-            </button>
-            
             {user ? (
               <div className="flex items-center space-x-4">
-                <Link to="/my-trips" className="text-sm font-medium text-gray-700 hover:text-primary">
+                <Link to="/my-trips" className="text-sm font-medium text-gray-700 hover:text-primary z-50">
                   My Trips
                 </Link>
-                <div className="relative group">
-                  <button className="flex items-center space-x-2 p-1.5 rounded-full hover:bg-gray-100 transition-colors">
+                <div className="relative">
+                  <button 
+                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                    className="flex items-center space-x-2 p-1.5 rounded-full hover:bg-gray-100 transition-colors relative z-50"
+                  >
                     <img src={user.avatar} alt="User" className="w-8 h-8 rounded-full border-2 border-primary" />
                     <span className="text-sm font-medium text-gray-700">{user.name}</span>
                   </button>
-                  <div className="absolute right-0 w-48 mt-2 py-2 bg-white rounded-xl shadow-xl border border-gray-100 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all transform origin-top-right">
-                    <Link to="/profile" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                      <User className="w-4 h-4 mr-2" /> Profile
-                    </Link>
-                    <button onClick={logout} className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                      <LogOut className="w-4 h-4 mr-2" /> Logout
-                    </button>
-                  </div>
+                  {isProfileOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-48 z-[100] animate-fade-in origin-top-right">
+                      <div className="py-2 bg-white rounded-xl shadow-xl border border-gray-100">
+                        <Link to="/profile" onClick={() => setIsProfileOpen(false)} className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                          <User className="w-4 h-4 mr-2" /> Profile
+                        </Link>
+                        <button onClick={() => { setIsProfileOpen(false); logout(); }} className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                          <LogOut className="w-4 h-4 mr-2" /> Logout
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
@@ -86,6 +90,14 @@ const Navbar = () => {
           </div>
         </div>
       </div>
+
+      {/* Dropdown Backdrop */}
+      {isProfileOpen && (
+        <div 
+          className="fixed inset-0 z-40" 
+          onClick={() => setIsProfileOpen(false)}
+        />
+      )}
 
       {/* Mobile Menu */}
       {isMenuOpen && (

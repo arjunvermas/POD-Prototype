@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { 
-  Star, MapPin, Wifi, Coffee, Car, Dumbbell, ShieldCheck, 
-  Check, Info, ChevronLeft, ChevronRight, Camera, User, 
-  Calendar, CreditCard 
+import {
+  Star, MapPin, Wifi, Coffee, Car, Dumbbell, ShieldCheck,
+  Check, Info, ChevronLeft, ChevronRight, Camera, User,
+  Calendar, CreditCard
 } from 'lucide-react';
 import { hotels } from '../data/hotels';
 import { useBooking } from '../context/BookingContext';
@@ -27,7 +27,7 @@ const HotelDetail = () => {
   ];
 
   const handleBook = (room) => {
-    setBookingData({ type: 'hotel', item: hotel, room: room, selectedProvider: selectedProvider || findCheapest(hotel.prices).cheapest });
+    setBookingData({ type: 'hotel', item: hotel, room: room, selectedProvider: selectedProvider || findCheapest(hotel.prices).cheapest, searchParams: location.state?.searchParams });
     navigate('/booking');
   };
 
@@ -57,8 +57,8 @@ const HotelDetail = () => {
           <Camera className="w-4 h-4" />
           <span>Show all photos</span>
         </button>
-        <button 
-          onClick={() => navigate(-1)} 
+        <button
+          onClick={() => navigate(-1)}
           className="absolute top-6 left-6 w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-white transition-colors"
         >
           <ChevronLeft className="w-6 h-6" />
@@ -158,7 +158,7 @@ const HotelDetail = () => {
                           <span className="text-2xl font-black">₹{room.price.toLocaleString()}</span>
                           <span className="text-gray-400 text-sm font-bold"> + taxes / night</span>
                         </div>
-                        <button 
+                        <button
                           onClick={() => handleBook(room)}
                           className="px-8 py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary-dark transition-all shadow-lg shadow-primary/20"
                         >
@@ -237,8 +237,8 @@ const HotelDetail = () => {
                       const isSelected = currentSelection.platform === site.platform;
                       const isCheapest = i === 0;
                       return (
-                        <div 
-                          key={i} 
+                        <div
+                          key={i}
                           onClick={() => setSelectedProvider(site)}
                           className={`flex justify-between items-center p-2 rounded-xl transition-all cursor-pointer ${isSelected ? 'bg-white shadow-sm border-2 border-primary' : 'bg-gray-50 border border-gray-100 hover:border-primary/50 hover:bg-white'}`}
                         >
@@ -257,13 +257,13 @@ const HotelDetail = () => {
                 </div>
               </div>
 
-              <button 
+              <button
                 onClick={() => handleBook(roomTypes[0])}
                 className="w-full bg-gradient-to-r from-primary to-primary-dark text-white py-5 rounded-2xl font-black text-lg transition-all hover:shadow-2xl hover:scale-[1.02] shadow-xl shadow-primary/20"
               >
                 Book Now
               </button>
-              
+
               <p className="text-center text-xs text-gray-400 font-bold mt-4 uppercase tracking-[0.2em]">
                 No credit card required yet
               </p>

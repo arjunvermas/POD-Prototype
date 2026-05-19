@@ -10,12 +10,12 @@ const backgroundOptions = [
   { id: 'sand', name: 'Sand', value: '#fff7ed', accent: '#ea580c', group: 'Soft' },
   { id: 'slate', name: 'Slate', value: '#eef2f7', accent: '#475569', group: 'Soft' },
   { id: 'mint', name: 'Mint', value: '#ecfdf5', accent: '#059669', group: 'Soft' },
-  { id: 'black-neon', name: 'Black Glow', value: '#050509', accent: '#22d3ee', glow: 'rgba(34, 211, 238, 0.55)', group: 'Neon' },
-  { id: 'gray-neon', name: 'Gray Neon', value: '#111827', accent: '#a3e635', glow: 'rgba(163, 230, 53, 0.5)', group: 'Neon' },
-  { id: 'blue-neon', name: 'Blue Neon', value: '#020617', accent: '#38bdf8', glow: 'rgba(56, 189, 248, 0.55)', group: 'Neon' },
-  { id: 'violet-night', name: 'Violet Night', value: '#10051f', accent: '#c084fc', glow: 'rgba(192, 132, 252, 0.5)', group: 'Neon' },
-  { id: 'cyber-teal', name: 'Cyber Teal', value: '#031b1b', accent: '#2dd4bf', glow: 'rgba(45, 212, 191, 0.5)', group: 'Neon' },
-  { id: 'hotline', name: 'Hotline', value: '#19030d', accent: '#fb7185', glow: 'rgba(251, 113, 133, 0.52)', group: 'Neon' }
+  { id: 'black-neon', name: 'Black Glow', value: '#000000', accent: '#22d3ee', glow: 'rgba(34, 211, 238, 0.55)', group: 'Neon' },
+  { id: 'gray-neon', name: 'Gray Neon', value: '#000000', accent: '#a3e635', glow: 'rgba(163, 230, 53, 0.5)', group: 'Neon' },
+  { id: 'blue-neon', name: 'Blue Neon', value: '#000000', accent: '#38bdf8', glow: 'rgba(56, 189, 248, 0.55)', group: 'Neon' },
+  { id: 'violet-night', name: 'Violet Night', value: '#000000', accent: '#c084fc', glow: 'rgba(192, 132, 252, 0.5)', group: 'Neon' },
+  { id: 'cyber-teal', name: 'Cyber Teal', value: '#000000', accent: '#2dd4bf', glow: 'rgba(45, 212, 191, 0.5)', group: 'Neon' },
+  { id: 'hotline', name: 'Hotline', value: '#000000', accent: '#fb7185', glow: 'rgba(251, 113, 133, 0.52)', group: 'Neon' }
 ];
 
 const STORAGE_KEY = 'bookmytrip-background-theme';
@@ -34,12 +34,12 @@ const ThemeSidebar = () => {
     document.documentElement.style.setProperty('--app-bg', selectedTheme.value);
     document.documentElement.style.setProperty('--app-theme-accent', selectedTheme.accent);
     document.documentElement.style.setProperty('--app-theme-glow', selectedTheme.glow || 'rgba(13, 148, 136, 0.2)');
-    document.documentElement.style.setProperty('--app-surface', isNeon ? 'rgba(15, 23, 42, 0.86)' : `color-mix(in srgb, ${selectedTheme.value} 28%, white)`);
-    document.documentElement.style.setProperty('--app-surface-strong', isNeon ? 'rgba(2, 6, 23, 0.9)' : `color-mix(in srgb, ${selectedTheme.value} 44%, white)`);
-    document.documentElement.style.setProperty('--app-surface-soft', isNeon ? 'rgba(255, 255, 255, 0.08)' : `color-mix(in srgb, ${selectedTheme.value} 68%, white)`);
-    document.documentElement.style.setProperty('--app-text', isNeon ? '#f8fafc' : '#1f2937');
-    document.documentElement.style.setProperty('--app-muted', isNeon ? '#cbd5e1' : '#64748b');
-    document.documentElement.style.setProperty('--app-border', isNeon ? 'rgba(148, 163, 184, 0.24)' : `color-mix(in srgb, ${selectedTheme.accent} 18%, #e5e7eb)`);
+    document.documentElement.style.setProperty('--app-surface', isNeon ? 'rgba(255, 255, 255, 0.03)' : `color-mix(in srgb, ${selectedTheme.value} 28%, white)`);
+    document.documentElement.style.setProperty('--app-surface-strong', isNeon ? 'rgba(255, 255, 255, 0.06)' : `color-mix(in srgb, ${selectedTheme.value} 44%, white)`);
+    document.documentElement.style.setProperty('--app-surface-soft', isNeon ? 'rgba(255, 255, 255, 0.01)' : `color-mix(in srgb, ${selectedTheme.value} 68%, white)`);
+    document.documentElement.style.setProperty('--app-text', isNeon ? '#ffffff' : '#1f2937');
+    document.documentElement.style.setProperty('--app-muted', isNeon ? 'rgba(255, 255, 255, 0.5)' : '#64748b');
+    document.documentElement.style.setProperty('--app-border', isNeon ? 'rgba(255, 255, 255, 0.08)' : `color-mix(in srgb, ${selectedTheme.accent} 18%, #e5e7eb)`);
     document.documentElement.dataset.appThemeTone = isNeon ? 'dark' : 'light';
     document.body.style.backgroundColor = selectedTheme.value;
     window.localStorage.setItem(STORAGE_KEY, selectedTheme.id);

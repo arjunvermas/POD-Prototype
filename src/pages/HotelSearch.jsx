@@ -6,6 +6,7 @@ import {
 import { findCheapest } from '../utils/priceHelper';
 import { useNavigate } from 'react-router-dom';
 import { hotels as hotelData } from '../data/hotels';
+import { useSearch } from '../context/SearchContext';
 
 const HotelSearch = () => {
   const [viewType, setViewType] = useState('grid');
@@ -17,11 +18,12 @@ const HotelSearch = () => {
   const [familyFriendlyOnly, setFamilyFriendlyOnly] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { searchParams: globalParams } = useSearch();
   const [searchParams, setSearchParams] = useState({
-    city: 'Goa',
-    checkInDate: '2026-05-10',
-    checkOutDate: '2026-05-11',
-    adults: 1
+    city: globalParams.city || globalParams.destination || 'Goa',
+    checkInDate: globalParams.checkInDate || globalParams.date || '2026-05-10',
+    checkOutDate: globalParams.checkOutDate || globalParams.returnDate || '2026-05-11',
+    adults: globalParams.passengers || 1
   });
   const navigate = useNavigate();
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -47,14 +49,22 @@ const HotelSearch = () => {
   }, [hotels, priceRange, selectedRating, selectedAmenities, familyFriendlyOnly]);
 
   useEffect(() => {
-    setHotels(hotelData);
+    if (searchParams.city) {
+      const result = hotelData.filter(h =>
+        h.location.toLowerCase().includes(searchParams.city.toLowerCase()) ||
+        h.name.toLowerCase().includes(searchParams.city.toLowerCase())
+      );
+      setHotels(result.length > 0 ? result : hotelData);
+    } else {
+      setHotels(hotelData);
+    }
   }, []);
 
   const handleHotelSearch = async (e) => {
     e.preventDefault();
     setLoading(true);
     setTimeout(() => {
-      const result = hotelData.filter(h => 
+      const result = hotelData.filter(h =>
         (!searchParams.city || h.location.toLowerCase().includes(searchParams.city.toLowerCase()) || h.name.toLowerCase().includes(searchParams.city.toLowerCase()))
       );
       setHotels(result.length > 0 ? result : hotelData);
@@ -132,10 +142,10 @@ const HotelSearch = () => {
               {/* Price Range */}
               <div>
                 <label className="text-sm font-bold text-gray-700 block mb-4">Price per night: ₹{priceRange.toLocaleString()}</label>
-                <input 
-                  type="range" 
-                  min="1000" 
-                  max="50000" 
+                <input
+                  type="range"
+                  min="1000"
+                  max="50000"
                   step="1000"
                   value={priceRange}
                   onChange={(e) => setPriceRange(parseInt(e.target.value))}
@@ -148,12 +158,11 @@ const HotelSearch = () => {
                 <label className="text-sm font-bold text-gray-700 block mb-4">Guest Rating</label>
                 <div className="space-y-2">
                   {[4, 3, 2].map(star => (
-                    <button 
+                    <button
                       key={star}
                       onClick={() => setSelectedRating(selectedRating === star ? 0 : star)}
-                      className={`w-full flex items-center justify-between p-3 rounded-xl border text-sm transition-all ${
-                        selectedRating === star ? 'border-primary bg-primary/5 text-primary' : 'border-gray-100'
-                      }`}
+                      className={`w-full flex items-center justify-between p-3 rounded-xl border text-sm transition-all ${selectedRating === star ? 'border-primary bg-primary/5 text-primary' : 'border-gray-100'
+                        }`}
                     >
                       <span className="flex items-center">
                         <Star className={`w-4 h-4 mr-1 ${selectedRating === star ? 'fill-primary' : 'text-gray-300'}`} />
@@ -171,12 +180,12 @@ const HotelSearch = () => {
                 <div className="space-y-3">
                   {amenitiesList.map(item => (
                     <label key={item.name} className="flex items-center cursor-pointer group">
-                      <input 
+                      <input
                         type="checkbox"
                         className="w-4 h-4 rounded text-primary focus:ring-primary border-gray-300"
                         checked={selectedAmenities.includes(item.name)}
                         onChange={(e) => {
-                          if(e.target.checked) setSelectedAmenities([...selectedAmenities, item.name]);
+                          if (e.target.checked) setSelectedAmenities([...selectedAmenities, item.name]);
                           else setSelectedAmenities(selectedAmenities.filter(a => a !== item.name));
                         }}
                       />
@@ -192,9 +201,8 @@ const HotelSearch = () => {
                 <button
                   type="button"
                   onClick={() => setFamilyFriendlyOnly(!familyFriendlyOnly)}
-                  className={`w-full flex items-center justify-between rounded-xl border p-3 text-sm transition-all ${
-                    familyFriendlyOnly ? 'border-primary bg-primary/5 text-primary' : 'border-gray-100 text-gray-600'
-                  }`}
+                  className={`w-full flex items-center justify-between rounded-xl border p-3 text-sm transition-all ${familyFriendlyOnly ? 'border-primary bg-primary/5 text-primary' : 'border-gray-100 text-gray-600'
+                    }`}
                 >
                   <span className="flex items-center font-bold">
                     <Users className="mr-2 h-4 w-4" />
@@ -218,13 +226,13 @@ const HotelSearch = () => {
               <p className="text-sm text-gray-500 font-medium">Showing {filteredHotels.length} properties</p>
             </div>
             <div className="flex items-center bg-gray-50 p-1 rounded-xl">
-              <button 
+              <button
                 onClick={() => setViewType('grid')}
                 className={`p-2 rounded-lg transition-all ${viewType === 'grid' ? 'bg-white shadow-sm text-primary' : 'text-gray-400'}`}
               >
                 <LayoutGrid className="w-5 h-5" />
               </button>
-              <button 
+              <button
                 onClick={() => setViewType('list')}
                 className={`p-2 rounded-lg transition-all ${viewType === 'list' ? 'bg-white shadow-sm text-primary' : 'text-gray-400'}`}
               >
@@ -235,18 +243,17 @@ const HotelSearch = () => {
 
           <div className={`grid gap-8 ${viewType === 'grid' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
             {filteredHotels.map(hotel => (
-              <div 
-                key={hotel.id} 
-                className={`bg-white rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer group overflow-hidden ${
-                  viewType === 'list' ? 'flex flex-col md:flex-row' : ''
-                }`}
-                onClick={() => navigate(`/hotels/${hotel.id}`)}
+              <div
+                key={hotel.id}
+                className={`bg-white rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer group overflow-hidden ${viewType === 'list' ? 'flex flex-col md:flex-row' : ''
+                  }`}
+                onClick={() => navigate(`/hotels/${hotel.id}`, { state: { searchParams } })}
               >
                 <div className={`relative overflow-hidden ${viewType === 'list' ? 'md:w-72' : 'h-60'}`}>
-                  <img 
-                    src={`${hotel.image}&sig=${hotel.id}`} 
-                    alt={hotel.name} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                  <img
+                    src={`${hotel.image}&sig=${hotel.id}`}
+                    alt={hotel.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     onError={(e) => {
                       e.target.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1000&auto=format&fit=crop";
                     }}
@@ -283,7 +290,7 @@ const HotelSearch = () => {
                         <span key={a} className="text-[10px] font-bold uppercase tracking-wider bg-gray-100 text-gray-500 px-2 py-1 rounded-md">{a}</span>
                       ))}
                     </div>
-                    
+
                     {/* Hotel Comparison */}
                     <div className="bg-gray-50/50 rounded-2xl p-4 border border-gray-100/50 mb-6">
                       <div className="flex justify-between items-center mb-3">
@@ -296,11 +303,11 @@ const HotelSearch = () => {
                           return sorted.map((site, i) => {
                             const isCheapest = i === 0;
                             return (
-                              <div 
-                                key={i} 
+                              <div
+                                key={i}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  navigate(`/hotels/${hotel.id}`, { state: { selectedProvider: site } });
+                                  navigate(`/hotels/${hotel.id}`, { state: { selectedProvider: site, searchParams } });
                                 }}
                                 className={`flex justify-between items-center p-2 rounded-xl transition-all cursor-pointer ${isCheapest ? 'bg-white shadow-sm border border-primary/20 hover:border-primary' : 'hover:bg-gray-100/50 hover:border hover:border-gray-300'}`}
                               >

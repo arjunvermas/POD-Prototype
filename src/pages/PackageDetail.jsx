@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  Clock, MapPin, Star, CheckCircle2, ChevronLeft, 
+import {
+  Clock, MapPin, Star, CheckCircle2, ChevronLeft,
   Plane, Hotel, Utensils, Camera, Calendar, ShieldCheck,
   ChevronRight, Info, Music, Coffee, Users
 } from 'lucide-react';
@@ -36,13 +36,13 @@ const PackageDetail = () => {
       <section className="relative h-[600px] flex items-center justify-center">
         <img src={pkg.image} className="absolute inset-0 w-full h-full object-cover" alt={pkg.name} />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent"></div>
-        <button 
+        <button
           onClick={() => navigate(-1)}
           className="absolute top-8 left-8 w-12 h-12 glass rounded-full flex items-center justify-center hover:bg-white transition-colors z-20"
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
-        
+
         <div className="relative z-10 max-w-7xl mx-auto px-4 w-full mt-24">
           <div className="max-w-3xl">
             <span className="bg-primary/20 backdrop-blur-md text-primary-light px-4 py-2 rounded-full text-xs font-black uppercase tracking-[0.2em] mb-6 inline-block border border-primary/30">
@@ -54,7 +54,7 @@ const PackageDetail = () => {
             <div className="flex flex-wrap items-center gap-8 text-white/80 font-bold uppercase tracking-widest text-sm">
               <span className="flex items-center"><MapPin className="w-5 h-5 mr-2 text-primary" /> {pkg.destination}</span>
               <span className="flex items-center"><Clock className="w-5 h-5 mr-2 text-primary" /> {pkg.duration}</span>
-              <span className="flex items-center"><Star className="w-5 h-5 mr-2 text-secondary fill-secondary" /> {pkg.rating} ({Math.floor(Math.random()*500)+100} Reviews)</span>
+              <span className="flex items-center"><Star className="w-5 h-5 mr-2 text-secondary fill-secondary" /> {pkg.rating} ({Math.floor(Math.random() * 500) + 100} Reviews)</span>
             </div>
           </div>
         </div>
@@ -155,7 +155,7 @@ const PackageDetail = () => {
           <aside className="w-full lg:w-96">
             <div className="sticky top-28 glass rounded-[3rem] border border-white p-10 shadow-2xl overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary opacity-5 rounded-full -mr-16 -mt-16"></div>
-              
+
               <div className="relative z-10">
                 <div className="flex justify-between items-center mb-8">
                   <div>
@@ -200,14 +200,14 @@ const PackageDetail = () => {
                   </div>
                 </div>
 
-                <button 
+                <button
                   onClick={handleBook}
                   className="w-full bg-gradient-to-r from-primary to-primary-dark text-white py-5 rounded-2xl font-black text-lg transition-all hover:shadow-2xl hover:scale-[1.02] active:scale-95 shadow-xl shadow-primary/30 flex items-center justify-center group"
                 >
                   <span>Book This Package</span>
                   <ChevronRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
                 </button>
-                
+
                 <div className="mt-8 flex items-center justify-center space-x-6">
                   <div className="flex items-center text-[10px] font-black text-gray-400 uppercase tracking-widest">
                     <ShieldCheck className="w-4 h-4 mr-2 text-green-500" /> Secure Payment

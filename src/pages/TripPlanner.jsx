@@ -33,24 +33,82 @@ const TripPlanner = () => {
     
     // Simulate AI generation
     setTimeout(() => {
+      const dest = (formData.destination || '').toLowerCase();
+      let themeOptions, activities, suggestions;
+
+      if (dest.includes('goa')) {
+        themeOptions = ["Coastal Exploration", "Heritage Walk", "Adventure Day", "Relaxation Mode"];
+        activities = [
+          { time: "09:00 AM", task: "Sunrise Beach Session & Breakfast at Baga", cost: "₹800", icon: Palmtree },
+          { time: "12:00 PM", task: "Fontainhas Cultural Walk", cost: "₹1,200", icon: Compass },
+          { time: "04:00 PM", task: "Water Sports / Scuba Diving", cost: "₹2,500", icon: Zap },
+          { time: "08:00 PM", task: "Seafood Fine Dining at Calangute", cost: "₹3,500", icon: Coffee }
+        ];
+        suggestions = ["Rent a scooter for better local mobility", "Carry light cotton clothes and sunscreen", "Try the local vindaloo", "Carry some cash for local flea markets"];
+      } else if (dest.includes('delhi')) {
+        themeOptions = ["Historical Exploration", "Street Food Safari", "Modern Architecture", "Cultural Immersion"];
+        activities = [
+          { time: "09:00 AM", task: "Visit Red Fort & Jama Masjid", cost: "₹500", icon: Compass },
+          { time: "01:00 PM", task: "Chandni Chowk Food Tour", cost: "₹1,000", icon: Coffee },
+          { time: "04:00 PM", task: "India Gate & Rajpath Walk", cost: "Free", icon: MapPin },
+          { time: "08:00 PM", task: "Dinner at Connaught Place", cost: "₹2,500", icon: ShoppingBag }
+        ];
+        suggestions = ["Use the Delhi Metro to avoid traffic", "Bargain hard at local markets like Sarojini", "Stay hydrated during summers", "Try the famous Chole Bhature"];
+      } else if (dest.includes('bombay') || dest.includes('mumbai')) {
+        themeOptions = ["Heritage Walk", "Coastal Drive", "Bollywood Tour", "Local Shopping"];
+        activities = [
+          { time: "09:00 AM", task: "Gateway of India & Taj Mahal Palace", cost: "Free", icon: Compass },
+          { time: "12:00 PM", task: "Colaba Causeway Shopping", cost: "₹3,000", icon: ShoppingBag },
+          { time: "04:00 PM", task: "Marine Drive Sunset Walk", cost: "Free", icon: Palmtree },
+          { time: "08:00 PM", task: "Dinner at Juhu Beach", cost: "₹1,500", icon: Coffee }
+        ];
+        suggestions = ["Travel by local trains during non-peak hours", "Carry an umbrella from June to September", "Try the local Vada Pav", "Enjoy the nightlife in Bandra"];
+      } else if (dest.includes('jaipur')) {
+        themeOptions = ["Royal Heritage", "Forts & Palaces", "Cultural Arts", "Traditional Dining"];
+        activities = [
+          { time: "08:00 AM", task: "Amer Fort Elephant Ride & Tour", cost: "₹1,500", icon: Compass },
+          { time: "01:00 PM", task: "Hawa Mahal & City Palace", cost: "₹800", icon: MapPin },
+          { time: "04:00 PM", task: "Shopping for Gems & Handicrafts", cost: "₹5,000", icon: ShoppingBag },
+          { time: "08:00 PM", task: "Chokhi Dhani Traditional Dinner", cost: "₹1,200", icon: Coffee }
+        ];
+        suggestions = ["Start early to avoid the afternoon heat", "Wear comfortable shoes for walking forts", "Try Laal Maas (spicy meat curry)", "Bargain well at Johari Bazaar"];
+      } else if (dest.includes('paris')) {
+        themeOptions = ["Art & Museums", "Romantic Walks", "French Cuisine", "Iconic Landmarks"];
+        activities = [
+          { time: "09:00 AM", task: "Eiffel Tower Morning Visit", cost: "€25", icon: MapPin },
+          { time: "01:00 PM", task: "Louvre Museum Tour", cost: "€17", icon: Compass },
+          { time: "05:00 PM", task: "Seine River Cruise", cost: "€15", icon: Zap },
+          { time: "08:00 PM", task: "Dinner in Montmartre", cost: "€60", icon: Coffee }
+        ];
+        suggestions = ["Learn a few basic French phrases", "Beware of pickpockets near major tourist sites", "Buy a Paris Museum Pass", "Try authentic croissants at a local boulangerie"];
+      } else if (dest.includes('bangalore') || dest.includes('bengaluru')) {
+        themeOptions = ["Tech & Gardens", "Pub Hopping", "Historical Sights", "Nature Escapes"];
+        activities = [
+          { time: "09:00 AM", task: "Lalbagh Botanical Garden Walk", cost: "₹100", icon: Palmtree },
+          { time: "01:00 PM", task: "Bangalore Palace Tour", cost: "₹250", icon: Compass },
+          { time: "04:00 PM", task: "Shopping at Commercial Street", cost: "₹2,000", icon: ShoppingBag },
+          { time: "08:00 PM", task: "Brewery Tour & Dinner at Indiranagar", cost: "₹2,500", icon: Coffee }
+        ];
+        suggestions = ["Expect sudden showers, carry an umbrella", "Use metro to beat the legendary traffic", "Try the filter coffee at CTR", "Book pubs in advance on weekends"];
+      } else {
+        themeOptions = ["City Exploration", "Local Culture", "Adventure Day", "Relaxation Mode"];
+        activities = [
+          { time: "09:00 AM", task: "Morning Sightseeing & Breakfast", cost: "₹1,000", icon: Compass },
+          { time: "01:00 PM", task: "Museum & Cultural Tour", cost: "₹800", icon: MapPin },
+          { time: "04:00 PM", task: "Local Market Shopping", cost: "₹2,500", icon: ShoppingBag },
+          { time: "08:00 PM", task: "Fine Dining Experience", cost: "₹3,000", icon: Coffee }
+        ];
+        suggestions = ["Download offline maps", "Keep a copy of your ID", "Ask locals for hidden gems", "Stay hydrated and carry snacks"];
+      }
+
       setItinerary({
-        destination: formData.destination || "Goa",
+        destination: formData.destination || "Your Dream Destination",
         days: Array.from({ length: parseInt(formData.duration) }).map((_, i) => ({
           day: i + 1,
-          theme: ["Coastal Exploration", "Heritage Walk", "Adventure Day", "Relaxation Mode"][i % 4],
-          activities: [
-            { time: "09:00 AM", task: "Sunrise Beach Session & Breakfast", cost: "₹800", icon: Palmtree },
-            { time: "12:00 PM", task: "Local Market & Cultural Tour", cost: "₹1,200", icon: ShoppingBag },
-            { time: "04:00 PM", task: "Evening Activity based on Interests", cost: "₹2,500", icon: Zap },
-            { time: "08:00 PM", task: "Fine Dining Experience", cost: "₹3,500", icon: Coffee },
-          ]
+          theme: themeOptions[i % themeOptions.length],
+          activities: activities
         })),
-        suggestions: [
-          "Rent a scooter for better local mobility",
-          "Carry light cotton clothes and sunscreen",
-          "Try the local seafood at 'Ocean Grill'",
-          "Carry some cash for local market shopping"
-        ]
+        suggestions: suggestions
       });
       setLoading(false);
     }, 2500);
