@@ -95,7 +95,7 @@ const FlightSearch = () => {
 
   const handleBook = (flight) => {
     setBookingData({ type: 'flight', item: flight, searchParams });
-    navigate('/booking');
+    window.open('/booking', '_blank');
   };
 
   const stopsOptions = ["Non-stop", "1 Stop", "2+ Stops"];
@@ -320,7 +320,42 @@ const FlightSearch = () => {
           </div>
 
           <div className="space-y-4 animate-fade-in">
-            {filteredFlights.map(flight => (
+            {loading ? (
+              [1, 2, 3].map(i => (
+                <div key={i} className="bg-white rounded-3xl border border-gray-100 shadow-sm animate-pulse p-6">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="flex items-center space-x-4 w-full md:w-auto">
+                      <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                      <div>
+                        <div className="h-5 bg-gray-200 rounded w-24 mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-16"></div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between flex-grow w-full md:w-auto px-0 md:px-8">
+                      <div className="text-center">
+                        <div className="h-6 bg-gray-200 rounded w-16 mb-2 mx-auto"></div>
+                        <div className="h-3 bg-gray-200 rounded w-12 mx-auto"></div>
+                      </div>
+                      <div className="flex flex-col items-center flex-grow px-4 opacity-50">
+                        <div className="h-3 bg-gray-200 rounded w-16 mb-2"></div>
+                        <div className="w-full h-px bg-gray-200 relative"></div>
+                      </div>
+                      <div className="text-center">
+                        <div className="h-6 bg-gray-200 rounded w-16 mb-2 mx-auto"></div>
+                        <div className="h-3 bg-gray-200 rounded w-12 mx-auto"></div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col md:items-end w-full md:w-auto pt-4 md:pt-0">
+                      <div className="h-8 bg-gray-200 rounded w-24 mb-3"></div>
+                      <div className="flex space-x-2">
+                        <div className="w-10 h-10 bg-gray-200 rounded-xl"></div>
+                        <div className="w-32 h-10 bg-gray-200 rounded-xl"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : filteredFlights.map(flight => (
               <div key={flight.id} className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 p-6">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                   <div className="flex items-center space-x-4 w-full md:w-auto">
@@ -391,7 +426,7 @@ const FlightSearch = () => {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setBookingData({ type: 'flight', item: flight, selectedProvider: site, searchParams });
-                                navigate('/booking');
+                                window.open('/booking', '_blank');
                               }}
                               className={`flex justify-between items-center p-2 rounded-xl transition-all cursor-pointer ${isCheapest ? 'bg-white shadow-sm border border-primary/20 hover:border-primary' : 'hover:bg-gray-100/50 hover:border hover:border-gray-300'}`}
                             >
@@ -492,7 +527,7 @@ const FlightSearch = () => {
                 <button
                   onClick={() => {
                     setBookingData({ type: 'flight', item: selectedFlight, searchParams });
-                    navigate('/booking');
+                    window.open('/booking', '_blank');
                   }}
                   className="px-10 py-4 bg-primary text-white rounded-2xl font-bold hover:bg-primary-dark transition-all shadow-xl shadow-primary/30"
                 >

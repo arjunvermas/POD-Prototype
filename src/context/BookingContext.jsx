@@ -3,11 +3,20 @@ import React, { createContext, useState, useContext } from 'react';
 const BookingContext = createContext();
 
 export const BookingProvider = ({ children }) => {
-  const [currentBooking, setCurrentBooking] = useState(null);
-  const [bookings, setBookings] = useState([]);
+  const [currentBooking, setCurrentBookingState] = useState(() => {
+    const saved = localStorage.getItem('currentBooking');
+    return saved ? JSON.parse(saved) : null;
+  });
+  
+  const [bookings, setBookingsState] = useState(() => {
+    const saved = localStorage.getItem('bookings');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const setBookingData = (data) => {
-    setCurrentBooking(data);
+    setCurrentBookingState(data);
+    if (data) localStorage.setItem('currentBooking', JSON.stringify(data));
+    else localStorage.removeItem('currentBooking');
   };
 
   const confirmBooking = (details) => {
@@ -18,8 +27,13 @@ export const BookingProvider = ({ children }) => {
       status: 'upcoming',
       date: new Date().toISOString()
     };
-    setBookings([...bookings, newBooking]);
-    setCurrentBooking(null);
+    const newBookings = [...bookings, newBooking];
+    setBookingsState(newBookings);
+    localStorage.setItem('bookings', JSON.stringify(newBookings));
+    
+    setCurrentBookingState(null);
+    localStorage.removeItem('currentBooking');
+    
     return newBooking;
   };
 

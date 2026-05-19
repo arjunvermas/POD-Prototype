@@ -20,7 +20,7 @@ const HotelSearch = () => {
   const [error, setError] = useState('');
   const { searchParams: globalParams } = useSearch();
   const [searchParams, setSearchParams] = useState({
-    city: globalParams.city || globalParams.destination || 'Goa',
+    city: globalParams.city || globalParams.destination || '',
     checkInDate: globalParams.checkInDate || globalParams.date || '2026-05-10',
     checkOutDate: globalParams.checkOutDate || globalParams.returnDate || '2026-05-11',
     adults: globalParams.passengers || 1
@@ -48,13 +48,19 @@ const HotelSearch = () => {
     setFilteredHotels(result);
   }, [hotels, priceRange, selectedRating, selectedAmenities, familyFriendlyOnly]);
 
+  const normalizeCity = (str) => {
+    if (!str) return '';
+    return str.toLowerCase().split(' (')[0].trim();
+  };
+
   useEffect(() => {
     if (searchParams.city) {
+      const searchTerm = normalizeCity(searchParams.city);
       const result = hotelData.filter(h =>
-        h.location.toLowerCase().includes(searchParams.city.toLowerCase()) ||
-        h.name.toLowerCase().includes(searchParams.city.toLowerCase())
+        h.location.toLowerCase().includes(searchTerm) ||
+        h.name.toLowerCase().includes(searchTerm)
       );
-      setHotels(result.length > 0 ? result : hotelData);
+      setHotels(result);
     } else {
       setHotels(hotelData);
     }
@@ -64,10 +70,11 @@ const HotelSearch = () => {
     e.preventDefault();
     setLoading(true);
     setTimeout(() => {
+      const searchTerm = normalizeCity(searchParams.city);
       const result = hotelData.filter(h =>
-        (!searchParams.city || h.location.toLowerCase().includes(searchParams.city.toLowerCase()) || h.name.toLowerCase().includes(searchParams.city.toLowerCase()))
+        (!searchTerm || h.location.toLowerCase().includes(searchTerm) || h.name.toLowerCase().includes(searchTerm))
       );
-      setHotels(result.length > 0 ? result : hotelData);
+      setHotels(result);
       setLoading(false);
     }, 500);
   };
@@ -82,54 +89,6 @@ const HotelSearch = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <form onSubmit={handleHotelSearch} className="mb-8 rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
-        <div className="grid gap-4 lg:grid-cols-4">
-          <label className="block">
-            <span className="text-sm font-bold text-gray-700">City</span>
-            <input
-              value={searchParams.city}
-              onChange={(e) => setSearchParams({ ...searchParams, city: e.target.value })}
-              placeholder="Goa"
-              className="mt-2 w-full rounded-2xl border border-gray-200 p-3 text-sm outline-none focus:border-primary"
-            />
-          </label>
-          <label className="block">
-            <span className="text-sm font-bold text-gray-700">Check-in</span>
-            <input
-              type="date"
-              value={searchParams.checkInDate}
-              onChange={(e) => setSearchParams({ ...searchParams, checkInDate: e.target.value })}
-              className="mt-2 w-full rounded-2xl border border-gray-200 p-3 text-sm outline-none focus:border-primary"
-            />
-          </label>
-          <label className="block">
-            <span className="text-sm font-bold text-gray-700">Check-out</span>
-            <input
-              type="date"
-              value={searchParams.checkOutDate}
-              onChange={(e) => setSearchParams({ ...searchParams, checkOutDate: e.target.value })}
-              className="mt-2 w-full rounded-2xl border border-gray-200 p-3 text-sm outline-none focus:border-primary"
-            />
-          </label>
-          <label className="block">
-            <span className="text-sm font-bold text-gray-700">Guests</span>
-            <input
-              type="number"
-              min="1"
-              value={searchParams.adults}
-              onChange={(e) => setSearchParams({ ...searchParams, adults: Math.max(1, Number(e.target.value)) })}
-              className="mt-2 w-full rounded-2xl border border-gray-200 p-3 text-sm outline-none focus:border-primary"
-            />
-          </label>
-        </div>
-        <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <span className="text-sm text-gray-500">Search live hotel offers through the API proxy.</span>
-          <button type="submit" className="inline-flex items-center justify-center rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-white transition hover:bg-primary-dark">
-            {loading ? 'Searching...' : 'Search Hotels'}
-          </button>
-        </div>
-        {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
-      </form>
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Sidebar Filters */}
         <aside className="w-full lg:w-72 space-y-8">
@@ -242,7 +201,32 @@ const HotelSearch = () => {
           </div>
 
           <div className={`grid gap-8 ${viewType === 'grid' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
-            {filteredHotels.map(hotel => (
+            {loading ? (
+              [1, 2, 3, 4].map(i => (
+                <div key={i} className={`bg-white rounded-[2rem] border border-gray-100 shadow-sm animate-pulse overflow-hidden ${viewType === 'list' ? 'flex flex-col md:flex-row' : ''}`}>
+                  <div className={`bg-gray-200 ${viewType === 'list' ? 'md:w-72' : 'h-60'}`}></div>
+                  <div className="p-6 flex-grow flex flex-col justify-between">
+                    <div>
+                      <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+                      <div className="h-4 bg-gray-200 rounded w-1/2 mb-6"></div>
+                      <div className="flex gap-2 mb-6">
+                        <div className="h-6 bg-gray-200 rounded w-20"></div>
+                        <div className="h-6 bg-gray-200 rounded w-24"></div>
+                        <div className="h-6 bg-gray-200 rounded w-16"></div>
+                      </div>
+                      <div className="h-32 bg-gray-100 rounded-2xl mb-6"></div>
+                    </div>
+                    <div className="pt-6 border-t border-gray-50 flex justify-between items-end">
+                      <div className="space-y-2">
+                        <div className="h-3 bg-gray-200 rounded w-16"></div>
+                        <div className="h-8 bg-gray-200 rounded w-24"></div>
+                      </div>
+                      <div className="h-10 bg-gray-200 rounded-xl w-28"></div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : filteredHotels.map(hotel => (
               <div
                 key={hotel.id}
                 className={`bg-white rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer group overflow-hidden ${viewType === 'list' ? 'flex flex-col md:flex-row' : ''
@@ -339,6 +323,14 @@ const HotelSearch = () => {
                 </div>
               </div>
             ))}
+            
+            {!loading && filteredHotels.length === 0 && (
+              <div className="col-span-full text-center py-20 glass rounded-3xl border border-gray-100">
+                <Hotel className="w-16 h-16 text-gray-200 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-gray-400">No hotels found</h3>
+                <p className="text-gray-400 mt-2">Try adjusting your filters or search for a different city.</p>
+              </div>
+            )}
           </div>
         </main>
       </div>

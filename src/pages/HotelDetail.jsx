@@ -28,7 +28,7 @@ const HotelDetail = () => {
 
   const handleBook = (room) => {
     setBookingData({ type: 'hotel', item: hotel, room: room, selectedProvider: selectedProvider || findCheapest(hotel.prices).cheapest, searchParams: location.state?.searchParams });
-    navigate('/booking');
+    window.open('/booking', '_blank');
   };
 
   return (

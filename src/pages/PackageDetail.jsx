@@ -19,7 +19,7 @@ const PackageDetail = () => {
 
   const handleBook = () => {
     setBookingData({ type: 'package', item: pkg });
-    navigate('/booking');
+    window.open('/booking', '_blank');
   };
 
   const itinerary = [

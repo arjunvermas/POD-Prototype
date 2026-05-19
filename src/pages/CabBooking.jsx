@@ -22,14 +22,20 @@ const CabBooking = () => {
 
   const today = new Date().toISOString().split('T')[0];
 
+  const [loading, setLoading] = useState(false);
+
   const handleSearch = (e) => {
     e.preventDefault();
-    setPickup(current => current || locations[0]);
-    setDrop(current => current || locations[3]);
-    setDate(current => current || today);
-    setTime(current => current || '10:00');
-    setFormNotice(pickup && drop && date && time ? '' : 'Showing cab options with default route details. You can adjust them anytime.');
+    setLoading(true);
     setShowResults(true);
+    setTimeout(() => {
+      setPickup(current => current || locations[0]);
+      setDrop(current => current || locations[3]);
+      setDate(current => current || today);
+      setTime(current => current || '10:00');
+      setFormNotice(pickup && drop && date && time ? '' : 'Showing cab options with default route details. You can adjust them anytime.');
+      setLoading(false);
+    }, 600);
   };
 
   const getBookingDetails = () => ({
@@ -41,13 +47,22 @@ const CabBooking = () => {
   });
 
   const handleBook = (cab, provider = null) => {
-    setBookingData({
-      type: 'cab',
-      item: cab,
-      details: getBookingDetails(),
-      selectedProvider: provider || findCheapest(cab.prices).cheapest
-    });
-    navigate('/booking');
+    const selected = provider || findCheapest(cab.prices).cheapest;
+    const from = encodeURIComponent(pickup || locations[0]);
+    const to = encodeURIComponent(drop || locations[3]);
+    let url = '';
+
+    if (selected.platform.toLowerCase() === 'uber') {
+      url = `https://m.uber.com/go/pickup?pickup=${from}&dropoff=${to}`;
+    } else if (selected.platform.toLowerCase() === 'ola') {
+      url = `https://book.olacabs.com/?pickup_name=${from}&drop_name=${to}`;
+    } else if (selected.platform.toLowerCase() === 'rapido') {
+      url = `https://www.rapido.bike/`;
+    } else {
+      url = `https://www.google.com/search?q=${selected.platform}+cab+booking`;
+    }
+
+    window.open(url, '_blank');
   };
 
   const handleRouteSelect = (route) => {
@@ -181,8 +196,8 @@ const CabBooking = () => {
                   type="submit"
                   className="w-full bg-gradient-to-r from-primary to-primary-dark text-white font-black py-3.5 rounded-xl flex items-center justify-center space-x-2 transition-all hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <Search className="w-5 h-5" />
-                  <span>Search Cabs</span>
+                  <Search className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+                  <span>{loading ? 'Searching...' : 'Search Cabs'}</span>
                 </button>
               </div>
             </form>
@@ -231,14 +246,49 @@ const CabBooking = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {displayedCabs.map(cab => {
+              {loading ? (
+                [1, 2, 3].map(i => (
+                  <div key={i} className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm animate-pulse overflow-hidden">
+                    <div className="h-48 bg-gray-200"></div>
+                    <div className="p-8">
+                      <div className="h-6 bg-gray-200 rounded w-1/2 mb-4"></div>
+                      <div className="flex gap-4 mb-6">
+                        <div className="h-4 bg-gray-200 rounded w-16"></div>
+                        <div className="h-4 bg-gray-200 rounded w-20"></div>
+                      </div>
+                      <div className="space-y-3 mb-8">
+                        <div className="h-4 bg-gray-200 rounded w-full"></div>
+                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                        <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                      </div>
+                      <div className="h-32 bg-gray-100 rounded-2xl mb-6"></div>
+                      <div className="pt-6 border-t border-gray-50 flex justify-between items-center">
+                        <div className="space-y-2">
+                          <div className="h-3 bg-gray-200 rounded w-20"></div>
+                          <div className="h-8 bg-gray-200 rounded w-24"></div>
+                        </div>
+                        <div className="h-12 bg-gray-200 rounded-2xl w-32"></div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : displayedCabs.map(cab => {
                 const cheapest = findCheapest(cab.prices).cheapest;
                 return (
                   <div key={cab.id} className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden group">
-                    <div className="h-48 relative overflow-hidden bg-gray-50 p-6">
-                      <img src={cab.image} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700" alt={cab.model} />
-                      <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+                    <div className="h-48 relative overflow-hidden bg-gray-50 p-6 group/img">
+                      <img src={cab.image} className="w-full h-full object-contain group-hover/img:scale-110 transition-transform duration-700" alt={cab.model} />
+                      <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold shadow-sm z-10">
                         {cab.type}
+                      </div>
+                      
+                      <div className="absolute inset-0 bg-gray-900/85 backdrop-blur-sm text-white p-6 translate-y-full group-hover/img:translate-y-0 transition-transform duration-300 flex flex-col justify-center items-center text-center">
+                        <p className="text-sm font-bold text-primary-light mb-2 uppercase tracking-widest">{cab.speedRank}</p>
+                        <p className="text-xs text-gray-300 mb-1">Base Fare: <span className="text-white font-bold">₹{cab.baseFare}</span></p>
+                        <p className="text-xs text-gray-300 mb-4">Rate: <span className="text-white font-bold">₹{cab.pricePerKm}/km</span></p>
+                        <div className="w-full h-px bg-white/20 my-2"></div>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mt-2">Highlights</p>
+                        <p className="text-xs mt-1 text-white font-medium">{cab.features.join(' • ')}</p>
                       </div>
                     </div>
 
@@ -292,7 +342,7 @@ const CabBooking = () => {
                                       details: getBookingDetails(),
                                       selectedProvider: site
                                     });
-                                    navigate('/booking');
+                                    handleBook(cab, site);
                                   }}
                                   className={`flex justify-between items-center p-2 rounded-xl transition-all cursor-pointer ${isCheapest ? 'bg-white shadow-sm border border-primary/20 hover:border-primary' : 'hover:bg-gray-100/50 hover:border hover:border-gray-300'}`}
                                 >
